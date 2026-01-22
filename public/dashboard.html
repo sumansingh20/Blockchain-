@@ -3,73 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | NIT Jalandhar Energy Trading</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Campus Energy Trade | NIT Jalandhar</title>
+    <meta name="description" content="Blockchain-based Campus Energy Trading System with CBDC Settlement">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --nitj-primary: #1a237e;
-            --nitj-secondary: #283593;
-            --nitj-accent: #3949ab;
-            --cbdc-gold: #c9a227;
-            --solar: #f59e0b;
-            --grid: #6b7280;
-            --success: #22c55e;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
         }
-        
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
         }
-        
-        .sidebar {
-            background: linear-gradient(180deg, var(--nitj-primary) 0%, var(--nitj-secondary) 100%);
-            min-height: 100vh;
-            position: fixed;
-            width: 250px;
-            padding-top: 1rem;
+
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
         }
-        
-        .sidebar .nav-link {
-            color: rgba(255,255,255,0.8);
-            padding: 0.75rem 1.25rem;
-            margin: 0.25rem 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s;
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.15);
-            color: white;
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
-        
-        .sidebar .nav-link i {
-            width: 24px;
-            margin-right: 0.5rem;
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
         }
-        
-        .main-content {
-            margin-left: 250px;
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Layout */
+        .main {
+            max-width: 1600px;
+            margin: 0 auto;
             padding: 2rem;
         }
-        
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
-        
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
         .stat-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-lg);
         }
-        
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .stat-card:nth-child(1)::before { background: var(--gradient-3); }
+        .stat-card:nth-child(2)::before { background: var(--gradient-1); }
+        .stat-card:nth-child(3)::before { background: var(--success); }
+        .stat-card:nth-child(4)::before { background: var(--gradient-2); }
+
         .stat-icon {
             width: 48px;
             height: 48px;
@@ -77,385 +170,827 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
-        }
-        
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--nitj-primary);
-        }
-        
-        .stat-label {
-            color: #64748b;
-            font-size: 0.85rem;
-        }
-        
-        .chart-container {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
-        }
-        
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-        
-        .table-container th {
-            background: var(--nitj-primary);
-            color: white;
-            font-weight: 500;
-            padding: 1rem;
-        }
-        
-        .table-container td {
-            padding: 1rem;
-            vertical-align: middle;
-        }
-        
-        .badge-solar { background: var(--solar); }
-        .badge-grid { background: var(--grid); }
-        .badge-hybrid { background: #10b981; }
-        
-        .status-active { color: var(--success); }
-        .status-pending { color: var(--warning); }
-        .status-failed { color: var(--danger); }
-        
-        .refresh-btn {
-            background: var(--nitj-accent);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        .refresh-btn:hover {
-            background: var(--nitj-primary);
-        }
-        
-        .logo-section {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 1.5rem;
             margin-bottom: 1rem;
         }
-        
-        .logo-text {
-            color: white;
+
+        .stat-card:nth-child(1) .stat-icon { background: rgba(79, 172, 254, 0.15); }
+        .stat-card:nth-child(2) .stat-icon { background: rgba(102, 126, 234, 0.15); }
+        .stat-card:nth-child(3) .stat-icon { background: rgba(16, 185, 129, 0.15); }
+        .stat-card:nth-child(4) .stat-icon { background: rgba(245, 87, 108, 0.15); }
+
+        .stat-value {
+            font-size: 2rem;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.25rem;
         }
-        
-        .logo-subtext {
-            color: rgba(255,255,255,0.7);
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Transactions Table */
+        .transactions-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .transaction-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .tx-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .tx-icon.receipt { background: rgba(79, 172, 254, 0.15); }
+        .tx-icon.token { background: rgba(245, 158, 11, 0.15); }
+        .tx-icon.settlement { background: rgba(16, 185, 129, 0.15); }
+
+        .tx-details h4 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .tx-details p {
             font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
         }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+        .tx-amount {
+            text-align: right;
         }
-        
-        .loading { animation: pulse 1.5s infinite; }
+
+        .tx-amount .value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tx-amount .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Wallet List */
+        .wallet-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .wallet-item:last-child {
+            border-bottom: none;
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .wallet-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            background: var(--bg-dark);
+        }
+
+        .wallet-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .wallet-id {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .wallet-balance {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Tariff Info */
+        .tariff-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .tariff-item {
+            background: var(--bg-dark);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .tariff-period {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .tariff-rate {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tariff-item.active {
+            border: 2px solid var(--primary);
+        }
+
+        .tariff-item.active .tariff-rate {
+            color: var(--primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="logo-section">
-            <div class="logo-text">⚡ NIT Jalandhar</div>
-            <div class="logo-subtext">Campus Energy Trading</div>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <div class="logo-text">
+                    <h1>Campus Energy Trade</h1>
+                    <p>Dr B R Ambedkar NIT Jalandhar</p>
+                </div>
+            </div>
+            <div class="status-badge" id="statusBadge">
+                <span class="status-dot"></span>
+                <span>Blockchain Connected</span>
+            </div>
         </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" href="#dashboard">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#trades">
-                    <i class="fas fa-exchange-alt"></i> Trades
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#meters">
-                    <i class="fas fa-bolt"></i> Meters
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#wallets">
-                    <i class="fas fa-wallet"></i> CBDC Wallets
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#carbon">
-                    <i class="fas fa-leaf"></i> Carbon Credits
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#blockchain">
-                    <i class="fas fa-cubes"></i> Blockchain
-                </a>
-            </li>
-            <li class="nav-item mt-3">
-                <a class="nav-link" href="/">
-                    <i class="fas fa-home"></i> Home
-                </a>
-            </li>
-        </ul>
-    </nav>
+    </header>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <main class="main">
+        <!-- Stats Grid -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="statReceipts">0</div>
+                <div class="stat-label">Energy Receipts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🪙</div>
+                <div class="stat-value" id="statTokens">0</div>
+                <div class="stat-label">Tokens Minted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="statEnergy">0 kWh</div>
+                <div class="stat-label">Total Energy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="statSettlement">₹0</div>
+                <div class="stat-label">CBDC Settled</div>
+            </div>
+        </section>
+
+        <!-- Content Grid -->
+        <section class="content-grid">
+            <!-- Transaction Form & History -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📝 New Energy Transaction</h2>
+                </div>
+                <div class="card-body">
+                    <form id="transactionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Meter ID</label>
+                                <select class="form-select" id="meterId" required>
+                                    <option value="">Select meter...</option>
+                                    <optgroup label="🏠 Hostels">
+                                        <option value="NITJ-MH1-001">NITJ-MH1-001 - Mega Hostel Block-1</option>
+                                        <option value="NITJ-MH2-002">NITJ-MH2-002 - Mega Hostel Block-2</option>
+                                        <option value="NITJ-GH1-003">NITJ-GH1-003 - Girls Hostel</option>
+                                    </optgroup>
+                                    <optgroup label="🎓 Academic">
+                                        <option value="NITJ-MB1-004">NITJ-MB1-004 - Main Building</option>
+                                        <option value="NITJ-LH1-005">NITJ-LH1-005 - Lecture Hall</option>
+                                        <option value="NITJ-CS1-006">NITJ-CS1-006 - CS Block</option>
+                                        <option value="NITJ-ECE-007">NITJ-ECE-007 - ECE Dept</option>
+                                        <option value="NITJ-ME1-008">NITJ-ME1-008 - Mechanical</option>
+                                    </optgroup>
+                                    <optgroup label="🏛️ Administrative">
+                                        <option value="NITJ-ADM-009">NITJ-ADM-009 - Admin Block</option>
+                                        <option value="NITJ-LIB-010">NITJ-LIB-010 - Library</option>
+                                    </optgroup>
+                                    <optgroup label="⚙️ Facilities">
+                                        <option value="NITJ-SPT-011">NITJ-SPT-011 - Sports Complex</option>
+                                        <option value="NITJ-WKS-012">NITJ-WKS-012 - Workshop</option>
+                                        <option value="NITJ-CAF-015">NITJ-CAF-015 - Cafeteria</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Energy (kWh)</label>
+                                <input type="number" class="form-input" id="kWh" placeholder="e.g., 25.5" 
+                                       step="0.001" min="0.001" max="1000" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Carbon Tag</label>
+                                <select class="form-select" id="carbonTag">
+                                    <option value="NORMAL">NORMAL - Grid Power</option>
+                                    <option value="GREEN">GREEN - Low Carbon</option>
+                                    <option value="RENEWABLE">RENEWABLE - Solar/Wind</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Payer Wallet</label>
+                                <select class="form-select" id="payerWallet">
+                                    <option value="NITJ_MAIN">NITJ_MAIN - Main Account</option>
+                                    <option value="NITJ_HOSTELS">NITJ_HOSTELS - Hostels</option>
+                                    <option value="NITJ_ACADEMIC">NITJ_ACADEMIC - Academic</option>
+                                    <option value="NITJ_SPORTS">NITJ_SPORTS - Sports</option>
+                                    <option value="NITJ_WORKSHOP">NITJ_WORKSHOP - Workshop</option>
+                                    <option value="NITJ_LIBRARY">NITJ_LIBRARY - Library</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                            ⚡ Record & Settle Transaction
+                        </button>
+                    </form>
+
+                    <!-- Tariff Info -->
+                    <div style="margin-top: 1.5rem;">
+                        <div class="form-label" style="margin-bottom: 0.75rem;">📊 PSPCL Tariff Rates</div>
+                        <div class="tariff-grid" id="tariffGrid">
+                            <div class="tariff-item" id="tariffNormal">
+                                <div class="tariff-period">NORMAL (6AM-6PM)</div>
+                                <div class="tariff-rate">₹6.79/kWh</div>
+                            </div>
+                            <div class="tariff-item" id="tariffPeak">
+                                <div class="tariff-period">PEAK (6PM-10PM)</div>
+                                <div class="tariff-rate">₹8.15/kWh</div>
+                            </div>
+                            <div class="tariff-item" id="tariffOffPeak">
+                                <div class="tariff-period">OFF-PEAK (10PM-6AM)</div>
+                                <div class="tariff-rate">₹6.11/kWh</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="card-header" style="border-top: 1px solid var(--border);">
+                    <h2 class="card-title">📜 Recent Transactions</h2>
+                </div>
+                <div class="transactions-container" id="transactionsContainer">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No transactions yet. Submit your first energy reading above!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallets Panel -->
             <div>
-                <h4 class="mb-1">Energy Trading Dashboard</h4>
-                <p class="text-muted mb-0" id="lastUpdate">Last updated: --</p>
-            </div>
-            <button class="refresh-btn" onclick="refreshAll()">
-                <i class="fas fa-sync-alt me-2"></i> Refresh
-            </button>
-        </div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <h2 class="card-title">💳 CBDC (e₹) Wallets</h2>
+                        <button class="btn btn-primary" onclick="refreshWallets()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                    <div id="walletsContainer">
+                        <!-- Wallets will be loaded here -->
+                    </div>
+                </div>
 
-        <!-- Stats Row -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="stat-value" id="totalTrades">0</div>
-                            <div class="stat-label">Total Trades</div>
-                        </div>
-                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                            <i class="fas fa-exchange-alt"></i>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">ℹ️ System Info</h2>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Institution:</strong> Dr B R Ambedkar NIT Jalandhar
+                            </p>
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Blockchain:</strong> Ethereum (Local Hardhat)
+                            </p>
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Contract:</strong> EnergyLedger v2.0
+                            </p>
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Tariff:</strong> PSPCL Punjab 2024
+                            </p>
+                            <p>
+                                <strong>Settlement:</strong> RBI CBDC (e₹) Simulation
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="stat-value" id="totalEnergy">0 kWh</div>
-                            <div class="stat-label">Energy Traded</div>
-                        </div>
-                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="stat-value" id="totalSettled">₹0</div>
-                            <div class="stat-label">CBDC Settled</div>
-                        </div>
-                        <div class="stat-icon" style="background: rgba(201, 162, 39, 0.1); color: #c9a227;">
-                            <i class="fas fa-rupee-sign"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="stat-value" id="carbonAvoided">0 kg</div>
-                            <div class="stat-label">CO₂ Avoided</div>
-                        </div>
-                        <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                            <i class="fas fa-leaf"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </section>
+    </main>
 
-        <!-- Charts Row -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-8">
-                <div class="chart-container">
-                    <h6 class="mb-3">Energy Trading Activity</h6>
-                    <canvas id="tradingChart" height="100"></canvas>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="chart-container">
-                    <h6 class="mb-3">Energy Sources</h6>
-                    <canvas id="sourceChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Trades Table -->
-        <div class="table-container">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Trade ID</th>
-                        <th>Producer</th>
-                        <th>Consumer</th>
-                        <th>Energy</th>
-                        <th>Source</th>
-                        <th>Status</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody id="tradesTable">
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            <i class="fas fa-spinner fa-spin me-2"></i> Loading trades...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        let tradingChart, sourceChart;
-        
-        // Initialize charts
-        function initCharts() {
-            const tradingCtx = document.getElementById('tradingChart').getContext('2d');
-            tradingChart = new Chart(tradingCtx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Energy (kWh)',
-                        data: [],
-                        borderColor: '#1a237e',
-                        backgroundColor: 'rgba(26, 35, 126, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-
-            const sourceCtx = document.getElementById('sourceChart').getContext('2d');
-            sourceChart = new Chart(sourceCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Solar', 'Grid', 'Hybrid'],
-                    datasets: [{
-                        data: [60, 30, 10],
-                        backgroundColor: ['#f59e0b', '#6b7280', '#10b981']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
-        }
-
-        // Fetch statistics
-        async function fetchStats() {
-            try {
-                const response = await fetch('/api/statistics');
-                const data = await response.json();
-                
-                if (data.success) {
-                    const stats = data.data;
-                    document.getElementById('totalTrades').textContent = stats.policy.trades.total;
-                    document.getElementById('totalEnergy').textContent = `${stats.policy.trades.totalKwh.toFixed(2)} kWh`;
-                    document.getElementById('totalSettled').textContent = `₹${stats.policy.trades.totalSettled.toFixed(2)}`;
-                    document.getElementById('carbonAvoided').textContent = `${stats.policy.carbon.totalAvoidedKg.toFixed(2)} kg`;
-                    
-                    // Update source chart
-                    const sources = stats.meters.byType;
-                    const sourceData = [];
-                    const sourceLabels = [];
-                    for (const [type, info] of Object.entries(sources)) {
-                        sourceLabels.push(type);
-                        sourceData.push(info.kWh || 0);
-                    }
-                    if (sourceData.length > 0) {
-                        sourceChart.data.labels = sourceLabels;
-                        sourceChart.data.datasets[0].data = sourceData;
-                        sourceChart.update();
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch stats:', error);
-            }
-        }
-
-        // Fetch trades
-        async function fetchTrades() {
-            try {
-                const response = await fetch('/api/trades?limit=10');
-                const data = await response.json();
-                
-                if (data.success && data.data.trades.length > 0) {
-                    const tbody = document.getElementById('tradesTable');
-                    tbody.innerHTML = data.data.trades.map(trade => `
-                        <tr>
-                            <td><code>${trade.tradeId.slice(0, 12)}...</code></td>
-                            <td>${trade.producer}</td>
-                            <td>${trade.consumer}</td>
-                            <td><strong>${(trade.pricePerKWh / 100).toFixed(2)} kWh</strong></td>
-                            <td><span class="badge badge-${trade.carbonTag.toLowerCase()}">${trade.carbonTag}</span></td>
-                            <td><span class="status-active"><i class="fas fa-check-circle"></i> Confirmed</span></td>
-                            <td>${new Date(trade.timestamp).toLocaleTimeString()}</td>
-                        </tr>
-                    `).join('');
-
-                    // Update trading chart
-                    const chartData = data.data.trades.slice().reverse().map(t => ({
-                        time: new Date(t.timestamp).toLocaleTimeString(),
-                        kwh: t.pricePerKWh / 100
-                    }));
-                    tradingChart.data.labels = chartData.map(d => d.time);
-                    tradingChart.data.datasets[0].data = chartData.map(d => d.kwh);
-                    tradingChart.update();
-                } else {
-                    document.getElementById('tradesTable').innerHTML = `
-                        <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">
-                                No trades yet. Submit a trade to get started.
-                            </td>
-                        </tr>
-                    `;
-                }
-            } catch (error) {
-                console.error('Failed to fetch trades:', error);
-            }
-        }
-
-        // Refresh all data
-        async function refreshAll() {
-            document.getElementById('lastUpdate').textContent = 'Updating...';
-            await Promise.all([fetchStats(), fetchTrades()]);
-            document.getElementById('lastUpdate').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
-        }
+        // Configuration
+        const API_URL = '/api';
+        let transactions = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            initCharts();
-            refreshAll();
-            setInterval(refreshAll, 30000); // Auto-refresh every 30 seconds
+            checkHealth();
+            loadStatistics();
+            refreshWallets();
+            loadRecentTransactions();
+            updateTariffHighlight();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                loadStatistics();
+                refreshWallets();
+                loadRecentTransactions();
+            }, 30000);
         });
+
+        // Load recent transactions from blockchain
+        async function loadRecentTransactions() {
+            try {
+                const response = await fetch(`${API_URL}/transactions/recent?limit=20`);
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    transactions = data.data;
+                    renderTransactions();
+                }
+            } catch (error) {
+                console.error('Failed to load transactions:', error);
+            }
+        }
+
+        // Check server health
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                
+                const badge = document.getElementById('statusBadge');
+                if (data.status === 'healthy') {
+                    badge.innerHTML = '<span class="status-dot"></span><span>Blockchain Connected</span>';
+                    badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                    badge.style.color = 'var(--success)';
+                } else {
+                    badge.innerHTML = '<span class="status-dot" style="background: var(--warning)"></span><span>Limited Mode</span>';
+                    badge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                    badge.style.color = 'var(--warning)';
+                }
+            } catch (error) {
+                const badge = document.getElementById('statusBadge');
+                badge.innerHTML = '<span class="status-dot" style="background: var(--danger)"></span><span>Disconnected</span>';
+                badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                badge.style.color = 'var(--danger)';
+            }
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_URL}/statistics`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data.blockchain;
+                    document.getElementById('statReceipts').textContent = stats.receipts || 0;
+                    document.getElementById('statTokens').textContent = stats.tokens || 0;
+                    document.getElementById('statEnergy').textContent = `${(stats.totalEnergy || 0).toFixed(1)} kWh`;
+                    document.getElementById('statSettlement').textContent = `₹${(stats.settlementValue || 0).toLocaleString('en-IN')}`;
+                }
+            } catch (error) {
+                console.error('Failed to load statistics:', error);
+            }
+        }
+
+        // Refresh wallets
+        async function refreshWallets() {
+            try {
+                const response = await fetch(`${API_URL}/wallet/all`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('walletsContainer');
+                    const wallets = data.data;
+                    
+                    const walletIcons = {
+                        'NITJ_MAIN': '🏛️',
+                        'NITJ_HOSTELS': '🏠',
+                        'NITJ_ACADEMIC': '🎓',
+                        'NITJ_SPORTS': '⚽',
+                        'NITJ_WORKSHOP': '⚙️',
+                        'NITJ_LIBRARY': '📚',
+                        'NITJ_ADMIN': '📋',
+                        'PSPCL_GRID': '⚡',
+                        'RBI_ESCROW': '🏦'
+                    };
+                    
+                    container.innerHTML = Object.entries(wallets)
+                        .filter(([id]) => id !== 'RBI_ESCROW')
+                        .map(([id, info]) => `
+                            <div class="wallet-item">
+                                <div class="wallet-info">
+                                    <div class="wallet-avatar">${walletIcons[id] || '💰'}</div>
+                                    <div>
+                                        <div class="wallet-name">${info.name || id}</div>
+                                        <div class="wallet-id">${id}</div>
+                                    </div>
+                                </div>
+                                <div class="wallet-balance">₹${info.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                            </div>
+                        `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load wallets:', error);
+            }
+        }
+
+        // Update tariff highlight based on current time
+        function updateTariffHighlight() {
+            const hour = new Date().getHours();
+            
+            document.querySelectorAll('.tariff-item').forEach(el => el.classList.remove('active'));
+            
+            if (hour >= 18 && hour < 22) {
+                document.getElementById('tariffPeak').classList.add('active');
+            } else if (hour >= 22 || hour < 6) {
+                document.getElementById('tariffOffPeak').classList.add('active');
+            } else {
+                document.getElementById('tariffNormal').classList.add('active');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = {
+                    meterId: document.getElementById('meterId').value,
+                    kWh: parseFloat(document.getElementById('kWh').value),
+                    carbonTag: document.getElementById('carbonTag').value,
+                    payerWallet: document.getElementById('payerWallet').value,
+                    payeeWallet: 'PSPCL_GRID'
+                };
+                
+                const response = await fetch(`${API_URL}/transaction/complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('success', `Transaction successful! Receipt #${data.data.receipt.receiptId} | ₹${data.data.pricing.total.toFixed(2)}`);
+                    addTransaction(data.data);
+                    loadStatistics();
+                    refreshWallets();
+                    
+                    // Reset form
+                    document.getElementById('kWh').value = '';
+                } else {
+                    showToast('error', data.error || 'Transaction failed');
+                }
+            } catch (error) {
+                showToast('error', 'Server error: ' + error.message);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Add transaction to list
+        function addTransaction(data) {
+            transactions.unshift(data);
+            renderTransactions();
+        }
+
+        // Render transactions
+        function renderTransactions() {
+            const container = document.getElementById('transactionsContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (transactions.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            const carbonIcons = {
+                'GREEN': '🌿',
+                'RENEWABLE': '☀️',
+                'NORMAL': '⚡',
+                'CERTIFIED': '✅'
+            };
+            
+            container.innerHTML = transactions.slice(0, 20).map(tx => {
+                const receiptId = tx.receipt?.receiptId || tx.receipt?.id || '?';
+                const tokenId = tx.token?.tokenId || tx.token?.id || '?';
+                const settlementId = tx.settlement?.settlementId || tx.settlement?.id || '?';
+                const meterId = tx.summary?.meterId || tx.receipt?.meterId || 'Unknown';
+                const carbonTag = tx.summary?.carbonTag || tx.receipt?.carbonTag || 'NORMAL';
+                const kWh = tx.summary?.kWh || tx.receipt?.kWh || 0;
+                const total = tx.pricing?.total || 0;
+                const icon = carbonIcons[carbonTag] || '⚡';
+                
+                return `
+                    <div class="transaction-item">
+                        <div class="tx-icon settlement">${icon}</div>
+                        <div class="tx-details">
+                            <h4>${meterId} - ${carbonTag}</h4>
+                            <p>Receipt #${receiptId} → Token #${tokenId} → Settlement #${settlementId}</p>
+                        </div>
+                        <div class="tx-amount">
+                            <div class="value">₹${total.toFixed(2)}</div>
+                            <div class="label">${parseFloat(kWh).toFixed(3)} kWh</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show toast notification
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✅' : '❌'}</span>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Update tariff highlight every minute
+        setInterval(updateTariffHighlight, 60000);
     </script>
 </body>
 </html>

@@ -4,8 +4,8 @@
   "network": "localhost",
   "chainId": 31337,
   "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "deployedAt": "2026-01-22T12:06:27.544Z",
-  "transactionHash": "0x5548350bd5789c500f73bcb912ff2d6c01d8eb76c17ba1ff67ae0314d8fd129c",
+  "deployedAt": "2026-01-22T14:14:24.816Z",
+  "transactionHash": "0x9a08dca4e7039eb83256241904a37e0f8769bf326a0c821c04a0fdd182c2dce3",
   "version": "2.0.0",
   "institution": "Dr B R Ambedkar NIT Jalandhar"
 }

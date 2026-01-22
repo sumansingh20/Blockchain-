@@ -19,26 +19,29 @@
     "type": "git",
     "url": "https://github.com/sumansingh20/Blockchain-.git"
   },
-  "main": "src/server.js",
+  "main": "backend/server.js",
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node src/server.js",
-    "demo": "node src/demo.js",
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "demo": "node scripts/demo.js",
     "compile": "hardhat compile",
     "node": "hardhat node",
     "deploy": "hardhat run scripts/deploy.js --network localhost",
-    "test": "node --test tests/",
-    "lint": "eslint src/ --fix",
+    "test": "hardhat test",
     "clean": "hardhat clean"
   },
   "dependencies": {
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethers": "^6.9.0",
     "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1"
   },
