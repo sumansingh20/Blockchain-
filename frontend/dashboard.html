@@ -750,14 +750,31 @@
             checkHealth();
             loadStatistics();
             refreshWallets();
+            loadRecentTransactions();
             updateTariffHighlight();
             
             // Auto-refresh every 30 seconds
             setInterval(() => {
                 loadStatistics();
                 refreshWallets();
+                loadRecentTransactions();
             }, 30000);
         });
+
+        // Load recent transactions from blockchain
+        async function loadRecentTransactions() {
+            try {
+                const response = await fetch(`${API_URL}/transactions/recent?limit=20`);
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    transactions = data.data;
+                    renderTransactions();
+                }
+            } catch (error) {
+                console.error('Failed to load transactions:', error);
+            }
+        }
 
         // Check server health
         async function checkHealth() {
@@ -921,19 +938,37 @@
             
             emptyState.style.display = 'none';
             
-            container.innerHTML = transactions.slice(0, 20).map(tx => `
-                <div class="transaction-item">
-                    <div class="tx-icon settlement">💰</div>
-                    <div class="tx-details">
-                        <h4>${tx.summary.meterId} - ${tx.summary.carbonTag}</h4>
-                        <p>Receipt #${tx.receipt.receiptId} → Token #${tx.token.tokenId} → Settlement #${tx.settlement.settlementId}</p>
+            const carbonIcons = {
+                'GREEN': '🌿',
+                'RENEWABLE': '☀️',
+                'NORMAL': '⚡',
+                'CERTIFIED': '✅'
+            };
+            
+            container.innerHTML = transactions.slice(0, 20).map(tx => {
+                const receiptId = tx.receipt?.receiptId || tx.receipt?.id || '?';
+                const tokenId = tx.token?.tokenId || tx.token?.id || '?';
+                const settlementId = tx.settlement?.settlementId || tx.settlement?.id || '?';
+                const meterId = tx.summary?.meterId || tx.receipt?.meterId || 'Unknown';
+                const carbonTag = tx.summary?.carbonTag || tx.receipt?.carbonTag || 'NORMAL';
+                const kWh = tx.summary?.kWh || tx.receipt?.kWh || 0;
+                const total = tx.pricing?.total || 0;
+                const icon = carbonIcons[carbonTag] || '⚡';
+                
+                return `
+                    <div class="transaction-item">
+                        <div class="tx-icon settlement">${icon}</div>
+                        <div class="tx-details">
+                            <h4>${meterId} - ${carbonTag}</h4>
+                            <p>Receipt #${receiptId} → Token #${tokenId} → Settlement #${settlementId}</p>
+                        </div>
+                        <div class="tx-amount">
+                            <div class="value">₹${total.toFixed(2)}</div>
+                            <div class="label">${parseFloat(kWh).toFixed(3)} kWh</div>
+                        </div>
                     </div>
-                    <div class="tx-amount">
-                        <div class="value">₹${tx.pricing.total.toFixed(2)}</div>
-                        <div class="label">${tx.summary.kWh.toFixed(3)} kWh</div>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Show toast notification

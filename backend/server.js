@@ -418,6 +418,53 @@ class EnergyTradeServer {
         });
 
         // ─────────────────────────────────────────────────────────────────────
+        // GET RECENT TRANSACTIONS
+        // ─────────────────────────────────────────────────────────────────────
+        
+        router.get('/transactions/recent', async (req, res, next) => {
+            try {
+                const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+                
+                if (!req.serverInitialized) {
+                    return res.json({ success: true, data: [] });
+                }
+                
+                const stats = await req.services.blockchain.getStatistics();
+                const transactions = [];
+                
+                // Get recent receipts (from latest to oldest)
+                for (let i = stats.receipts; i >= Math.max(1, stats.receipts - limit + 1); i--) {
+                    try {
+                        const receipt = await req.services.blockchain.getReceipt(i);
+                        const token = await req.services.blockchain.getToken(i).catch(() => null);
+                        const settlement = await req.services.blockchain.getSettlement(i).catch(() => null);
+                        
+                        transactions.push({
+                            receipt,
+                            token,
+                            settlement,
+                            summary: {
+                                meterId: receipt.meterId,
+                                kWh: receipt.kWh,
+                                carbonTag: receipt.carbonTag,
+                                timestamp: receipt.timestamp
+                            },
+                            pricing: {
+                                total: settlement ? settlement.amount / 100 : receipt.kWh * 7.23
+                            }
+                        });
+                    } catch (e) {
+                        // Skip if receipt not found
+                    }
+                }
+                
+                res.json({ success: true, data: transactions });
+            } catch (error) {
+                next(error);
+            }
+        });
+
+        // ─────────────────────────────────────────────────────────────────────
         // FULL TRANSACTION FLOW
         // ─────────────────────────────────────────────────────────────────────
         
