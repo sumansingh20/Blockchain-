@@ -26,9 +26,13 @@
     "server": "node backend/server.js",
     "server:dev": "nodemon backend/server.js",
     "demo": "node scripts/demo.js",
+    "demo:full": "node scripts/comprehensiveDemo.js",
     "simulate": "node meter/simulator.js --demo",
     "simulate:continuous": "node meter/simulator.js --start 60000",
     "test": "hardhat test",
+    "test:sdk": "mocha test/sdk.test.js --timeout 10000",
+    "test:all": "npm run test && npm run test:sdk",
+    "report": "node scripts/generateReport.js",
     "clean": "hardhat clean"
   },
   "dependencies": {
