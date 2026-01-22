@@ -3,7 +3,14 @@
   "rewrites": [
     { "source": "/api/health", "destination": "/api/health.js" },
     { "source": "/api/statistics", "destination": "/api/statistics.js" },
+    { "source": "/api/wallet/all", "destination": "/api/wallets.js" },
     { "source": "/api/wallets", "destination": "/api/wallets.js" },
-    { "source": "/api/transactions", "destination": "/api/transactions.js" }
+    { "source": "/api/transactions/recent", "destination": "/api/transactions.js" },
+    { "source": "/api/transactions", "destination": "/api/transactions.js" },
+    { "source": "/api/metrics", "destination": "/api/metrics.js" },
+    { "source": "/api/transaction/complete", "destination": "/api/transactions.js" }
+  ],
+  "routes": [
+    { "src": "/", "dest": "/frontend/dashboard.html" }
   ]
 }
