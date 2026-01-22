@@ -711,7 +711,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="card-title">ℹ️ System Info</h2>
+                        <h2 class="card-title">🏛️ Institution Details</h2>
                     </div>
                     <div class="card-body">
                         <div style="font-size: 0.85rem; color: var(--text-secondary);">
@@ -719,16 +719,16 @@
                                 <strong>Institution:</strong> Dr B R Ambedkar NIT Jalandhar
                             </p>
                             <p style="margin-bottom: 0.75rem;">
-                                <strong>Blockchain:</strong> Ethereum (Local Hardhat)
+                                <strong>Project:</strong> Final Year B.Tech Project
                             </p>
                             <p style="margin-bottom: 0.75rem;">
-                                <strong>Contract:</strong> EnergyLedger v2.0
+                                <strong>Standard:</strong> IS-15959:2011 Smart Metering
                             </p>
                             <p style="margin-bottom: 0.75rem;">
-                                <strong>Tariff:</strong> PSPCL Punjab 2024
+                                <strong>Utility:</strong> PSPCL Punjab Tariff 2024
                             </p>
                             <p>
-                                <strong>Settlement:</strong> RBI CBDC (e₹) Simulation
+                                <strong>Settlement:</strong> RBI Digital Rupee (e₹) Pilot
                             </p>
                         </div>
                     </div>
@@ -807,11 +807,17 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    const stats = data.data.blockchain;
-                    document.getElementById('statReceipts').textContent = stats.receipts || 0;
-                    document.getElementById('statTokens').textContent = stats.tokens || 0;
-                    document.getElementById('statEnergy').textContent = `${(stats.totalEnergy || 0).toFixed(1)} kWh`;
-                    document.getElementById('statSettlement').textContent = `₹${(stats.settlementValue || 0).toLocaleString('en-IN')}`;
+                    const stats = data.data;
+                    // Handle both old (blockchain) and new (flat) formats
+                    const receipts = stats.blockchain?.receipts || stats.totalTransactions || 0;
+                    const tokens = stats.blockchain?.tokens || stats.totalTransactions || 0;
+                    const totalEnergy = stats.blockchain?.totalEnergy || stats.totalEnergy || 0;
+                    const settlementValue = stats.blockchain?.settlementValue || parseFloat(stats.totalSettled) || 0;
+                    
+                    document.getElementById('statReceipts').textContent = receipts;
+                    document.getElementById('statTokens').textContent = tokens;
+                    document.getElementById('statEnergy').textContent = `${parseFloat(totalEnergy).toFixed(1)} kWh`;
+                    document.getElementById('statSettlement').textContent = `₹${parseFloat(settlementValue).toLocaleString('en-IN')}`;
                 }
             } catch (error) {
                 console.error('Failed to load statistics:', error);
@@ -826,7 +832,16 @@
                 
                 if (data.success) {
                     const container = document.getElementById('walletsContainer');
-                    const wallets = data.data;
+                    let wallets = data.data;
+                    
+                    // Handle array format (from API) - convert to object for display
+                    if (Array.isArray(wallets)) {
+                        const walletsObj = {};
+                        wallets.forEach(w => {
+                            walletsObj[w.id] = { name: w.name, balance: w.balance, type: w.type };
+                        });
+                        wallets = walletsObj;
+                    }
                     
                     const walletIcons = {
                         'NITJ_MAIN': '🏛️',
@@ -836,8 +851,14 @@
                         'NITJ_WORKSHOP': '⚙️',
                         'NITJ_LIBRARY': '📚',
                         'NITJ_ADMIN': '📋',
+                        'NITJ_SOLAR': '☀️',
+                        'NITJ_MICRO_GEN': '🔋',
+                        'NITJ_EV_CHARGER': '🚗',
+                        'NITJ_RESEARCH': '🔬',
+                        'NITJ_TREASURY': '🏦',
+                        'PARTNER_BANK': '🏧',
                         'PSPCL_GRID': '⚡',
-                        'RBI_ESCROW': '🏦'
+                        'RBI_ESCROW': '🏛️'
                     };
                     
                     container.innerHTML = Object.entries(wallets)
@@ -848,10 +869,10 @@
                                     <div class="wallet-avatar">${walletIcons[id] || '💰'}</div>
                                     <div>
                                         <div class="wallet-name">${info.name || id}</div>
-                                        <div class="wallet-id">${id}</div>
+                                        <div class="wallet-id">${info.type || 'e₹-R Retail'}</div>
                                     </div>
                                 </div>
-                                <div class="wallet-balance">₹${info.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                                <div class="wallet-balance">₹${parseFloat(info.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
                             </div>
                         `).join('');
                 }
