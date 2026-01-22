@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NIT Jalandhar Campus Energy Trade - Blockchain-based Energy Trading with CBDC Settlement">
+    <meta name="theme-color" content="#1e3a5f">
+    <title>NIT Jalandhar - Campus Energy Trade System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2c5282;
+            --primary-dark: #0d2137;
+            --secondary: #f39c12;
+            --success: #27ae60;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --gray: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border-bottom: 4px solid var(--secondary);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 32px;
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .logo-text p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.2);
+        }
+
+        .status-badge.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
+        }
+
+        .refresh-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* GRID */
+        .grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title i {
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        /* STAT CARDS */
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--success));
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 16px 0;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 12px;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--light);
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.95rem;
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* PROGRESS BAR */
+        .progress {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--success) 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* WALLET LIST */
+        .wallet-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s;
+        }
+
+        .wallet-item:hover {
+            background: var(--light);
+        }
+
+        .wallet-item:last-child {
+            border-bottom: none;
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .wallet-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: var(--light);
+        }
+
+        .wallet-details h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .wallet-details p {
+            margin: 4px 0 0 0;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .wallet-balance {
+            font-weight: 700;
+            color: var(--success);
+            text-align: right;
+        }
+
+        /* CHARTS */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 16px;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 48px;
+        }
+
+        footer p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ALERTS */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid var(--info);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+                position: relative;
+                top: 0;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            th, td {
+                padding: 12px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>NIT Jalandhar Energy</h1>
+                        <p>Blockchain-based Campus Energy Trading | CBDC Settlement</p>
+                    </div>
+                </div>
+                <div class="header-status">
+                    <div class="status-badge" id="statusBadge">
+                        <span class="status-dot"></span>
+                        <span>Connecting...</span>
+                    </div>
+                    <button class="refresh-btn" onclick="loadDashboard()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- KEY METRICS -->
+        <div class="grid grid-4">
+            <div class="card stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-solar-panel"></i>
+                </div>
+                <div class="stat-value" id="solarProduced">0.00</div>
+                <div class="stat-label">Solar Produced (kWh)</div>
+                <div class="card-subtitle">GREEN Energy</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-plug"></i>
+                </div>
+                <div class="stat-value" id="gridConsumed">0.00</div>
+                <div class="stat-label">Grid Consumed (kWh)</div>
+                <div class="card-subtitle">Total Usage</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="stat-value" id="totalSettled">₹0.00</div>
+                <div class="stat-label">Total Settled (e₹)</div>
+                <div class="card-subtitle">CBDC Transactions</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="stat-value" id="greenPercent">0%</div>
+                <div class="stat-label">Green Energy %</div>
+                <div class="progress">
+                    <div class="progress-fill" id="greenBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="grid grid-3">
+            <!-- BLOCKCHAIN STATS -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="fas fa-cubes"></i>
+                            Blockchain Stats
+                        </div>
+                    </div>
+                </div>
+                <div style="display: grid; gap: 20px;">
+                    <div>
+                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Total Receipts</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="totalReceipts">0</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Tokens Minted</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--success);" id="totalTokens">0</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Settlements</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary);" id="totalSettlements">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PSPCL TARIFF -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="fas fa-bolt"></i>
+                            PSPCL Tariff
+                        </div>
+                    </div>
+                </div>
+                <div style="display: grid; gap: 16px;">
+                    <div style="padding: 12px; background: var(--light); border-radius: 8px;">
+                        <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 4px;">Base Rate</div>
+                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--primary);">₹6.79/kWh</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="padding: 12px; background: #fef3c7; border-radius: 8px;">
+                            <div style="font-size: 0.75rem; color: #92400e; font-weight: 600;">Peak (6-10 PM)</div>
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #92400e;">1.2x</div>
+                        </div>
+                        <div style="padding: 12px; background: #dcfce7; border-radius: 8px;">
+                            <div style="font-size: 0.75rem; color: #166534; font-weight: 600;">Night Rebate</div>
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #166534;">0.9x</div>
+                        </div>
+                    </div>
+                    <div style="padding: 12px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid var(--success);">
+                        <div style="font-size: 0.85rem; color: #166534; font-weight: 600;">🌱 Solar Incentive</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--success);">15% Discount</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ENERGY FLOW -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="fas fa-chart-line"></i>
+                            Energy Flow
+                        </div>
+                    </div>
+                </div>
+                <div style="display: grid; gap: 20px;">
+                    <div>
+                        <div style="color: var(--gray); font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">Net Energy</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary);" id="netEnergy">+0.00 kWh</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray); font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">Green Energy</div>
+                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);" id="greenEnergy">0.00 kWh</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANSACTIONS & WALLETS -->
+        <div class="grid grid-2">
+            <!-- RECENT TRANSACTIONS -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="fas fa-history"></i>
+                            Recent Transactions
+                        </div>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Receipt</th>
+                                <th>Meter</th>
+                                <th>kWh</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--gray);">
+                                    <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
+                                    No transactions yet
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TOP WALLETS -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="fas fa-wallet"></i>
+                            Top Campus Wallets
+                        </div>
+                    </div>
+                </div>
+                <div id="walletsList">
+                    <div style="text-align: center; color: var(--gray); padding: 40px 20px;">
+                        <i class="fas fa-wallet" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
+                        Loading wallets...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCKCHAIN HASHES -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">
+                        <i class="fas fa-link"></i>
+                        Blockchain Transactions
+                    </div>
+                    <div class="card-subtitle">Immutable records on Ethereum/Polygon network</div>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Receipt ID</th>
+                            <th>Transaction Hash</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hashesBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--gray);">
+                                <i class="fas fa-link" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
+                                No blockchain transactions yet
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <p>🏛️ Dr B R Ambedkar National Institute of Technology, Jalandhar</p>
+            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">GT Road Bypass, Jalandhar, Punjab 144027 | PSPCL Large Supply Category</p>
+            <p style="margin-top: 16px; font-size: 0.85rem;">
+                Built with Solidity • ethers.js • Express.js • Node.js | 
+                <a href="https://github.com/yourusername/nit-campus-energy" target="_blank">View on GitHub</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let refreshInterval;
+
+        async function loadDashboard() {
+            try {
+                // Check API health
+                const healthRes = await fetch(`${API_BASE}/api/health`);
+                const health = await healthRes.json();
+
+                const statusBadge = document.getElementById('statusBadge');
+                if (health.blockchain === 'connected') {
+                    statusBadge.className = 'status-badge';
+                    statusBadge.innerHTML = '<span class="status-dot"></span><span>Connected</span>';
+                } else {
+                    statusBadge.className = 'status-badge offline';
+                    statusBadge.innerHTML = '<span class="status-dot"></span><span>Disconnected</span>';
+                    return;
+                }
+
+                // Load summary
+                const summaryRes = await fetch(`${API_BASE}/api/dashboard/summary`);
+                const summaryData = await summaryRes.json();
+                const summary = summaryData.summary || summaryData;
+
+                // Update key metrics
+                document.getElementById('solarProduced').textContent = (summary.energy?.totalProduced || 0).toFixed(2);
+                document.getElementById('gridConsumed').textContent = (summary.energy?.totalConsumed || 0).toFixed(2);
+                document.getElementById('totalSettled').textContent = `₹${((summary.cbdc?.totalSettledINR || 0) / 100).toFixed(2)}`;
+                document.getElementById('netEnergy').textContent = `${(summary.energy?.netEnergy || 0).toFixed(2)} kWh`;
+                document.getElementById('greenEnergy').textContent = `${(summary.energy?.greenEnergy || 0).toFixed(2)} kWh`;
+
+                const greenPct = summary.energy?.greenPercentage ? parseInt(summary.energy.greenPercentage) : 0;
+                document.getElementById('greenPercent').textContent = `${greenPct}%`;
+                document.getElementById('greenBar').style.width = `${greenPct}%`;
+
+                // Blockchain stats
+                document.getElementById('totalReceipts').textContent = summary.blockchain?.totalReceipts || 0;
+                document.getElementById('totalTokens').textContent = summary.blockchain?.totalTokens || 0;
+                document.getElementById('totalSettlements').textContent = summary.blockchain?.totalSettlements || 0;
+
+                // Transactions
+                const txBody = document.getElementById('transactionsBody');
+                if (summary.blockchain?.recentTransactions?.length) {
+                    txBody.innerHTML = summary.blockchain.recentTransactions.slice(0, 10).map(tx => `
+                        <tr>
+                            <td><span class="badge badge-success">#${tx.receiptId}</span></td>
+                            <td style="font-family: monospace; font-size: 0.85rem;">${tx.meterId}</td>
+                            <td>${tx.kWh.toFixed(2)}</td>
+                            <td><strong>₹${(tx.amount / 100).toFixed(2)}</strong></td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Wallets
+                const walletsList = document.getElementById('walletsList');
+                if (summary.cbdc?.topWallets?.length) {
+                    walletsList.innerHTML = summary.cbdc.topWallets.slice(0, 8).map((wallet, idx) => `
+                        <div class="wallet-item">
+                            <div class="wallet-info">
+                                <div class="wallet-icon">
+                                    ${getWalletIcon(wallet.name)}
+                                </div>
+                                <div class="wallet-details">
+                                    <h4>${wallet.name}</h4>
+                                    <p>${wallet.id}</p>
+                                </div>
+                            </div>
+                            <div class="wallet-balance">
+                                ₹${(wallet.balance / 100).toFixed(2)}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+            }
+        }
+
+        function getWalletIcon(name) {
+            if (name.includes('SOLAR')) return '☀️';
+            if (name.includes('HOSTEL')) return '🏢';
+            if (name.includes('LIBRARY')) return '📚';
+            if (name.includes('LAB')) return '🔬';
+            if (name.includes('DEPT')) return '🏛️';
+            if (name.includes('TREASURY')) return '💰';
+            return '💳';
+        }
+
+        // Load on page load
+        loadDashboard();
+
+        // Auto-refresh every 5 seconds
+        refreshInterval = setInterval(loadDashboard, 5000);
+
+        // Refresh on visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) loadDashboard();
+        });
+    </script>
+</body>
+</html>
