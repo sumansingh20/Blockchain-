@@ -3,26 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NIT Jalandhar Campus Energy Trade - Blockchain-based Energy Trading with CBDC Settlement">
-    <meta name="theme-color" content="#1e3a5f">
-    <title>NIT Jalandhar - Campus Energy Trade System</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <title>Campus Energy Trade System | NIT Jalandhar</title>
+    <meta name="description" content="Tokenized Campus Energy Trade with Blockchain Provenance and CBDC (e₹) Settlement - Dr B R Ambedkar NIT Jalandhar">
+    <meta name="keywords" content="blockchain, energy trading, CBDC, NIT Jalandhar, smart contracts, ethereum">
+    <meta name="author" content="NIT Jalandhar">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Campus Energy Trade System">
+    <meta property="og:description" content="Blockchain-based energy trading with CBDC settlement">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #1e3a5f;
-            --primary-light: #2c5282;
-            --primary-dark: #0d2137;
-            --secondary: #f39c12;
-            --success: #27ae60;
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
             --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            --dark: #1f2937;
-            --light: #f3f4f6;
-            --white: #ffffff;
-            --gray: #9ca3af;
+            --bg-dark: #0a0f1a;
+            --bg-card: #111827;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border: #1f2937;
         }
 
         * {
@@ -31,825 +38,661 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary-dark) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
-            color: var(--dark);
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1440px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* HEADER */
-        header {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px 32px;
-            margin-bottom: 32px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            border-bottom: 4px solid var(--secondary);
-            position: sticky;
-            top: 20px;
-            z-index: 100;
-        }
-
-        .header-content {
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .logo-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            color: var(--white);
-            font-size: 32px;
-            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
-        }
-
-        .logo-text h1 {
-            font-size: 1.8rem;
-            color: var(--primary);
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .logo-text p {
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        .header-status {
-            display: flex;
             align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background: #dcfce7;
-            color: #166534;
-            border-radius: 24px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.2);
-        }
-
-        .status-badge.offline {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: currentColor;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .refresh-btn {
-            padding: 10px 20px;
-            background: var(--primary);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .refresh-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
-        }
-
-        .refresh-btn.loading i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-
-        /* GRID */
-        .grid {
-            display: grid;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .grid-4 {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-        }
-
-        /* CARDS */
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 28px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid var(--light);
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .card-title i {
-            color: var(--secondary);
-            font-size: 1.5rem;
-        }
-
-        .card-subtitle {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 4px;
-        }
-
-        /* STAT CARDS */
-        .stat-card {
+            text-align: center;
+            padding: 2rem;
             position: relative;
             overflow: hidden;
         }
 
-        .stat-card::before {
+        .hero::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--secondary), var(--success));
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 16px 0;
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 0.95rem;
-            color: var(--gray);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-icon {
-            font-size: 2rem;
-            color: var(--secondary);
-            margin-bottom: 12px;
-        }
-
-        /* TABLE */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: var(--light);
-            padding: 16px;
-            text-align: left;
-            font-weight: 700;
-            color: var(--dark);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 0.95rem;
-        }
-
-        tr:hover {
-            background: var(--light);
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
         }
 
         .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .badge-success {
-            background: #dcfce7;
-            color: #166534;
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
 
-        .badge-warning {
-            background: #fef3c7;
-            color: #92400e;
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
         }
 
-        .badge-info {
-            background: #dbeafe;
-            color: #1e40af;
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
         }
 
-        /* PROGRESS BAR */
-        .progress {
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 12px;
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--text-secondary);
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--secondary) 0%, var(--success) 100%);
-            border-radius: 4px;
-            transition: width 0.5s ease;
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 100%);
         }
 
-        /* WALLET LIST */
-        .wallet-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background 0.2s;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .wallet-item:hover {
-            background: var(--light);
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
         }
 
-        .wallet-item:last-child {
-            border-bottom: none;
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
         }
 
-        .wallet-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
         }
 
-        .wallet-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(17, 24, 39, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            background: var(--light);
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
         }
 
-        .wallet-details h4 {
-            margin: 0;
-            font-size: 0.95rem;
-            color: var(--dark);
+        .feature-card:nth-child(1) .feature-icon { background: rgba(59, 130, 246, 0.15); }
+        .feature-card:nth-child(2) .feature-icon { background: rgba(16, 185, 129, 0.15); }
+        .feature-card:nth-child(3) .feature-icon { background: rgba(245, 158, 11, 0.15); }
+        .feature-card:nth-child(4) .feature-icon { background: rgba(139, 92, 246, 0.15); }
+        .feature-card:nth-child(5) .feature-icon { background: rgba(236, 72, 153, 0.15); }
+        .feature-card:nth-child(6) .feature-icon { background: rgba(20, 184, 166, 0.15); }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
             font-weight: 600;
+            margin-bottom: 0.75rem;
         }
 
-        .wallet-details p {
-            margin: 4px 0 0 0;
-            font-size: 0.85rem;
-            color: var(--gray);
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
 
-        .wallet-balance {
-            font-weight: 700;
-            color: var(--success);
-            text-align: right;
+        /* Architecture Section */
+        .architecture {
+            padding: 6rem 2rem;
         }
 
-        /* CHARTS */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-top: 16px;
+        .arch-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 3rem;
         }
 
-        /* FOOTER */
-        footer {
+        .arch-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .arch-node {
+            flex: 1;
+            min-width: 200px;
             text-align: center;
-            padding: 32px 20px;
-            color: rgba(255, 255, 255, 0.9);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 48px;
+            padding: 1.5rem;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            position: relative;
         }
 
-        footer p {
-            margin: 8px 0;
-            font-size: 0.95rem;
+        .arch-node::after {
+            content: '→';
+            position: absolute;
+            right: -1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--primary);
         }
 
-        footer a {
-            color: var(--secondary);
-            text-decoration: none;
+        .arch-node:last-child::after {
+            display: none;
+        }
+
+        .arch-node-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .arch-node h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .arch-node p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            padding: 6rem 2rem;
+            background: var(--bg-card);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .tech-item {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .tech-item-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tech-item-name {
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        /* Setup Section */
+        .setup {
+            padding: 6rem 2rem;
         }
 
-        /* ALERTS */
-        .alert {
-            padding: 16px 20px;
-            border-radius: 8px;
-            margin-bottom: 16px;
+        .code-block {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #c9d1d9;
+        }
+
+        .code-comment {
+            color: #8b949e;
+        }
+
+        .code-command {
+            color: #79c0ff;
+        }
+
+        .setup-steps {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .setup-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .setup-step h3 {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
-        .alert-success {
-            background: #dcfce7;
-            color: #166534;
-            border-left: 4px solid var(--success);
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
         }
 
-        .alert-warning {
-            background: #fef3c7;
-            color: #92400e;
-            border-left: 4px solid var(--warning);
+        /* Footer */
+        .footer {
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            text-align: center;
         }
 
-        .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border-left: 4px solid var(--info);
+        .footer-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-            .grid-2 { grid-template-columns: 1fr; }
+        .footer h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
         }
 
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            header {
-                padding: 16px 20px;
-                position: relative;
-                top: 0;
-            }
-
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .stat-value {
+            .hero h1 {
                 font-size: 2rem;
             }
 
-            .card {
-                padding: 20px;
+            .arch-flow {
+                flex-direction: column;
             }
 
-            th, td {
-                padding: 12px;
-                font-size: 0.85rem;
+            .arch-node::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -1.5rem;
+                transform: translateX(50%);
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
-        /* ANIMATIONS */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
-        .card {
-            animation: slideIn 0.5s ease forwards;
+        .floating {
+            animation: float 3s ease-in-out infinite;
         }
-
-        .card:nth-child(2) { animation-delay: 0.1s; }
-        .card:nth-child(3) { animation-delay: 0.2s; }
-        .card:nth-child(4) { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <header>
-            <div class="header-content">
-                <div class="logo-section">
-                    <div class="logo-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <div class="logo-text">
-                        <h1>NIT Jalandhar Energy</h1>
-                        <p>Blockchain-based Campus Energy Trading | CBDC Settlement</p>
-                    </div>
-                </div>
-                <div class="header-status">
-                    <div class="status-badge" id="statusBadge">
-                        <span class="status-dot"></span>
-                        <span>Connecting...</span>
-                    </div>
-                    <button class="refresh-btn" onclick="loadDashboard()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <span>⚡</span>
+                <span>Blockchain Energy Trading Platform</span>
             </div>
-        </header>
-
-        <!-- KEY METRICS -->
-        <div class="grid grid-4">
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-solar-panel"></i>
-                </div>
-                <div class="stat-value" id="solarProduced">0.00</div>
-                <div class="stat-label">Solar Produced (kWh)</div>
-                <div class="card-subtitle">GREEN Energy</div>
-            </div>
-
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-plug"></i>
-                </div>
-                <div class="stat-value" id="gridConsumed">0.00</div>
-                <div class="stat-label">Grid Consumed (kWh)</div>
-                <div class="card-subtitle">Total Usage</div>
-            </div>
-
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-rupee-sign"></i>
-                </div>
-                <div class="stat-value" id="totalSettled">₹0.00</div>
-                <div class="stat-label">Total Settled (e₹)</div>
-                <div class="card-subtitle">CBDC Transactions</div>
-            </div>
-
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-leaf"></i>
-                </div>
-                <div class="stat-value" id="greenPercent">0%</div>
-                <div class="stat-label">Green Energy %</div>
-                <div class="progress">
-                    <div class="progress-fill" id="greenBar" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MAIN CONTENT -->
-        <div class="grid grid-3">
-            <!-- BLOCKCHAIN STATS -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-cubes"></i>
-                            Blockchain Stats
-                        </div>
-                    </div>
-                </div>
-                <div style="display: grid; gap: 20px;">
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Total Receipts</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="totalReceipts">0</div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Tokens Minted</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--success);" id="totalTokens">0</div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Settlements</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary);" id="totalSettlements">0</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PSPCL TARIFF -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-bolt"></i>
-                            PSPCL Tariff
-                        </div>
-                    </div>
-                </div>
-                <div style="display: grid; gap: 16px;">
-                    <div style="padding: 12px; background: var(--light); border-radius: 8px;">
-                        <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 4px;">Base Rate</div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--primary);">₹6.79/kWh</div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="padding: 12px; background: #fef3c7; border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: #92400e; font-weight: 600;">Peak (6-10 PM)</div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: #92400e;">1.2x</div>
-                        </div>
-                        <div style="padding: 12px; background: #dcfce7; border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: #166534; font-weight: 600;">Night Rebate</div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: #166534;">0.9x</div>
-                        </div>
-                    </div>
-                    <div style="padding: 12px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid var(--success);">
-                        <div style="font-size: 0.85rem; color: #166534; font-weight: 600;">🌱 Solar Incentive</div>
-                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--success);">15% Discount</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ENERGY FLOW -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-chart-line"></i>
-                            Energy Flow
-                        </div>
-                    </div>
-                </div>
-                <div style="display: grid; gap: 20px;">
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">Net Energy</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary);" id="netEnergy">+0.00 kWh</div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">Green Energy</div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);" id="greenEnergy">0.00 kWh</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TRANSACTIONS & WALLETS -->
-        <div class="grid grid-2">
-            <!-- RECENT TRANSACTIONS -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-history"></i>
-                            Recent Transactions
-                        </div>
-                    </div>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Receipt</th>
-                                <th>Meter</th>
-                                <th>kWh</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionsBody">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: var(--gray);">
-                                    <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
-                                    No transactions yet
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TOP WALLETS -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-wallet"></i>
-                            Top Campus Wallets
-                        </div>
-                    </div>
-                </div>
-                <div id="walletsList">
-                    <div style="text-align: center; color: var(--gray); padding: 40px 20px;">
-                        <i class="fas fa-wallet" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
-                        Loading wallets...
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- BLOCKCHAIN HASHES -->
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <div class="card-title">
-                        <i class="fas fa-link"></i>
-                        Blockchain Transactions
-                    </div>
-                    <div class="card-subtitle">Immutable records on Ethereum/Polygon network</div>
-                </div>
-            </div>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Receipt ID</th>
-                            <th>Transaction Hash</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="hashesBody">
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: var(--gray);">
-                                <i class="fas fa-link" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
-                                No blockchain transactions yet
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- FOOTER -->
-        <footer>
-            <p>🏛️ Dr B R Ambedkar National Institute of Technology, Jalandhar</p>
-            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">GT Road Bypass, Jalandhar, Punjab 144027 | PSPCL Large Supply Category</p>
-            <p style="margin-top: 16px; font-size: 0.85rem;">
-                Built with Solidity • ethers.js • Express.js • Node.js | 
-                <a href="https://github.com/yourusername/nit-campus-energy" target="_blank">View on GitHub</a>
+            
+            <h1>
+                Tokenized Campus<br>
+                <span>Energy Trade System</span>
+            </h1>
+            
+            <p class="hero-description">
+                A complete blockchain-based energy trading solution with smart contracts, 
+                energy tokenization, and CBDC (e₹) settlement for 
+                Dr B R Ambedkar National Institute of Technology, Jalandhar.
             </p>
-        </footer>
-    </div>
+            
+            <div class="hero-buttons">
+                <a href="https://github.com/sumansingh20/Blockchain-" class="btn btn-primary" target="_blank">
+                    📦 View on GitHub
+                </a>
+                <a href="#setup" class="btn btn-secondary">
+                    🚀 Quick Start
+                </a>
+            </div>
+        </div>
+    </section>
 
-    <script>
-        const API_BASE = window.location.origin;
-        let refreshInterval;
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Key Features</h2>
+                <p>Enterprise-grade blockchain infrastructure for campus energy management</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⛓️</div>
+                    <h3>Blockchain Provenance</h3>
+                    <p>Immutable energy receipts recorded on Ethereum blockchain with full transaction history and audit trail.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🪙</div>
+                    <h3>Energy Tokenization</h3>
+                    <p>ERC-721 compatible energy certificates minted for each consumption record with carbon tag metadata.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>CBDC Settlement</h3>
+                    <p>Instant settlement using RBI's Central Bank Digital Currency (e₹) simulation with multi-wallet support.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>PSPCL Tariff Engine</h3>
+                    <p>Real Punjab State Power Corporation tariff rates with time-of-use pricing (Peak/Normal/Off-Peak).</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3>Smart Meter Simulation</h3>
+                    <p>15 campus zone meters with realistic consumption patterns for hostels, labs, and facilities.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Carbon Tracking</h3>
+                    <p>Support for GREEN, RENEWABLE, and CERTIFIED carbon tags with automatic discount calculations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        async function loadDashboard() {
-            try {
-                // Check API health
-                const healthRes = await fetch(`${API_BASE}/api/health`);
-                const health = await healthRes.json();
+    <!-- Architecture Section -->
+    <section class="architecture">
+        <div class="container">
+            <div class="section-title">
+                <h2>System Architecture</h2>
+                <p>End-to-end transaction flow from meter reading to settlement</p>
+            </div>
+            
+            <div class="arch-diagram">
+                <div class="arch-flow">
+                    <div class="arch-node">
+                        <div class="arch-node-icon">📡</div>
+                        <h4>Smart Meter</h4>
+                        <p>Energy Reading</p>
+                    </div>
+                    <div class="arch-node">
+                        <div class="arch-node-icon">📝</div>
+                        <h4>Receipt</h4>
+                        <p>Blockchain Record</p>
+                    </div>
+                    <div class="arch-node">
+                        <div class="arch-node-icon">🪙</div>
+                        <h4>Token</h4>
+                        <p>NFT Certificate</p>
+                    </div>
+                    <div class="arch-node">
+                        <div class="arch-node-icon">💳</div>
+                        <h4>CBDC</h4>
+                        <p>e₹ Settlement</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                const statusBadge = document.getElementById('statusBadge');
-                if (health.blockchain === 'connected') {
-                    statusBadge.className = 'status-badge';
-                    statusBadge.innerHTML = '<span class="status-dot"></span><span>Connected</span>';
-                } else {
-                    statusBadge.className = 'status-badge offline';
-                    statusBadge.innerHTML = '<span class="status-dot"></span><span>Disconnected</span>';
-                    return;
-                }
+    <!-- Tech Stack -->
+    <section class="tech-stack">
+        <div class="container">
+            <div class="section-title">
+                <h2>Technology Stack</h2>
+                <p>Built with modern, production-ready technologies</p>
+            </div>
+            
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-item-icon">💎</div>
+                    <div class="tech-item-name">Solidity</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🔧</div>
+                    <div class="tech-item-name">Hardhat</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🟢</div>
+                    <div class="tech-item-name">Node.js</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🚂</div>
+                    <div class="tech-item-name">Express.js</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">⟠</div>
+                    <div class="tech-item-name">ethers.js</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🛡️</div>
+                    <div class="tech-item-name">OpenZeppelin</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                // Load summary
-                const summaryRes = await fetch(`${API_BASE}/api/dashboard/summary`);
-                const summaryData = await summaryRes.json();
-                const summary = summaryData.summary || summaryData;
+    <!-- Setup Section -->
+    <section class="setup" id="setup">
+        <div class="container">
+            <div class="section-title">
+                <h2>Quick Start</h2>
+                <p>Get the system running in minutes</p>
+            </div>
+            
+            <div class="setup-steps">
+                <div class="setup-step">
+                    <h3><span class="step-number">1</span> Clone & Install</h3>
+                    <div class="code-block">
+                        <pre><span class="code-comment"># Clone the repository</span>
+<span class="code-command">git clone https://github.com/sumansingh20/Blockchain-.git</span>
+<span class="code-command">cd Blockchain-/campus-energy</span>
 
-                // Update key metrics
-                document.getElementById('solarProduced').textContent = (summary.energy?.totalProduced || 0).toFixed(2);
-                document.getElementById('gridConsumed').textContent = (summary.energy?.totalConsumed || 0).toFixed(2);
-                document.getElementById('totalSettled').textContent = `₹${((summary.cbdc?.totalSettledINR || 0) / 100).toFixed(2)}`;
-                document.getElementById('netEnergy').textContent = `${(summary.energy?.netEnergy || 0).toFixed(2)} kWh`;
-                document.getElementById('greenEnergy').textContent = `${(summary.energy?.greenEnergy || 0).toFixed(2)} kWh`;
+<span class="code-comment"># Install dependencies</span>
+<span class="code-command">npm install</span></pre>
+                    </div>
+                </div>
+                
+                <div class="setup-step">
+                    <h3><span class="step-number">2</span> Start Blockchain</h3>
+                    <div class="code-block">
+                        <pre><span class="code-comment"># Terminal 1: Start Hardhat node</span>
+<span class="code-command">npx hardhat node</span>
 
-                const greenPct = summary.energy?.greenPercentage ? parseInt(summary.energy.greenPercentage) : 0;
-                document.getElementById('greenPercent').textContent = `${greenPct}%`;
-                document.getElementById('greenBar').style.width = `${greenPct}%`;
+<span class="code-comment"># Terminal 2: Deploy contract</span>
+<span class="code-command">npx hardhat run scripts/deploy.js --network localhost</span></pre>
+                    </div>
+                </div>
+                
+                <div class="setup-step">
+                    <h3><span class="step-number">3</span> Run Server & Demo</h3>
+                    <div class="code-block">
+                        <pre><span class="code-comment"># Terminal 3: Start backend server</span>
+<span class="code-command">node backend/server.js</span>
 
-                // Blockchain stats
-                document.getElementById('totalReceipts').textContent = summary.blockchain?.totalReceipts || 0;
-                document.getElementById('totalTokens').textContent = summary.blockchain?.totalTokens || 0;
-                document.getElementById('totalSettlements').textContent = summary.blockchain?.totalSettlements || 0;
+<span class="code-comment"># Terminal 4: Run demo</span>
+<span class="code-command">node scripts/demo.js</span></pre>
+                    </div>
+                </div>
+                
+                <div class="setup-step">
+                    <h3><span class="step-number">4</span> Open Dashboard</h3>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">
+                        Open <code style="background: var(--bg-dark); padding: 0.25rem 0.5rem; border-radius: 4px;">http://localhost:3000</code> in your browser to access the energy trading dashboard.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                // Transactions
-                const txBody = document.getElementById('transactionsBody');
-                if (summary.blockchain?.recentTransactions?.length) {
-                    txBody.innerHTML = summary.blockchain.recentTransactions.slice(0, 10).map(tx => `
-                        <tr>
-                            <td><span class="badge badge-success">#${tx.receiptId}</span></td>
-                            <td style="font-family: monospace; font-size: 0.85rem;">${tx.meterId}</td>
-                            <td>${tx.kWh.toFixed(2)}</td>
-                            <td><strong>₹${(tx.amount / 100).toFixed(2)}</strong></td>
-                        </tr>
-                    `).join('');
-                }
-
-                // Wallets
-                const walletsList = document.getElementById('walletsList');
-                if (summary.cbdc?.topWallets?.length) {
-                    walletsList.innerHTML = summary.cbdc.topWallets.slice(0, 8).map((wallet, idx) => `
-                        <div class="wallet-item">
-                            <div class="wallet-info">
-                                <div class="wallet-icon">
-                                    ${getWalletIcon(wallet.name)}
-                                </div>
-                                <div class="wallet-details">
-                                    <h4>${wallet.name}</h4>
-                                    <p>${wallet.id}</p>
-                                </div>
-                            </div>
-                            <div class="wallet-balance">
-                                ₹${(wallet.balance / 100).toFixed(2)}
-                            </div>
-                        </div>
-                    `).join('');
-                }
-
-            } catch (error) {
-                console.error('Dashboard load error:', error);
-            }
-        }
-
-        function getWalletIcon(name) {
-            if (name.includes('SOLAR')) return '☀️';
-            if (name.includes('HOSTEL')) return '🏢';
-            if (name.includes('LIBRARY')) return '📚';
-            if (name.includes('LAB')) return '🔬';
-            if (name.includes('DEPT')) return '🏛️';
-            if (name.includes('TREASURY')) return '💰';
-            return '💳';
-        }
-
-        // Load on page load
-        loadDashboard();
-
-        // Auto-refresh every 5 seconds
-        refreshInterval = setInterval(loadDashboard, 5000);
-
-        // Refresh on visibility change
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) loadDashboard();
-        });
-    </script>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">⚡</div>
+        <h3>Campus Energy Trade System</h3>
+        <p>Dr B R Ambedkar National Institute of Technology, Jalandhar</p>
+        
+        <div class="footer-links">
+            <a href="https://github.com/sumansingh20/Blockchain-" target="_blank">GitHub</a>
+            <a href="https://nitj.ac.in" target="_blank">NIT Jalandhar</a>
+            <a href="https://rbi.org.in" target="_blank">RBI CBDC</a>
+            <a href="https://pspcl.in" target="_blank">PSPCL</a>
+        </div>
+        
+        <p style="margin-top: 3rem; font-size: 0.875rem;">
+            © 2024 NIT Jalandhar. Built with ❤️ for sustainable campus energy management.
+        </p>
+    </footer>
 </body>
 </html>

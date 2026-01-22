@@ -1,538 +1,495 @@
 /**
- * ============================================
- * SMART METER SIMULATOR
- * NIT JALANDHAR CAMPUS ENERGY SYSTEM
- * ============================================
- * Simulates smart meters for NIT Jalandhar campus:
- * - Rooftop solar installations (GREEN energy)
- * - Hostel consumption (Mega, BH-1 to BH-4, GH-1, GH-2)
- * - Department/Lab consumption (CSE, ECE, ME, etc.)
- * - Library and Admin building meters
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * NIT JALANDHAR - CAMPUS ENERGY TRADE SYSTEM
+ * Smart Meter Simulator - Real Campus Data
+ * ═══════════════════════════════════════════════════════════════════════════════
  * 
- * Features:
- * - Realistic energy patterns based on NIT Jalandhar usage
- * - Digital signature for tamper-proof data integrity
- * - Time-based variations (Jalandhar timezone IST UTC+5:30)
- * - Carbon tagging (GREEN for solar, NORMAL for grid)
+ * @author NIT Jalandhar Energy Team
+ * @version 2.0.0
+ * @license MIT
  * 
- * Location: NIT Jalandhar, GT Road, Jalandhar, Punjab 144027
- * Coordinates: 31.3962° N, 75.5346° E
+ * @description
+ * Simulates smart meter readings from various campus zones with realistic
+ * consumption patterns based on NIT Jalandhar's actual infrastructure.
  */
 
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
+'use strict';
 
-// ============ CONFIGURATION ============
+const axios = require('axios');
 
-const METER_TYPES = {
-    // Solar installations
-    SOLAR_100KW: 'SOLAR_100KW',      // Main building rooftop
-    SOLAR_75KW: 'SOLAR_75KW',        // Mega hostel rooftop
-    SOLAR_50KW: 'SOLAR_50KW',        // Library rooftop
-    SOLAR_25KW: 'SOLAR_25KW',        // Sports complex
-    
-    // Hostels
-    MEGA_HOSTEL: 'MEGA_HOSTEL',      // ~1500 students
-    BOYS_HOSTEL: 'BOYS_HOSTEL',      // BH-1 to BH-4 (~300 each)
-    GIRLS_HOSTEL: 'GIRLS_HOSTEL',    // GH-1, GH-2
-    
-    // Academic
-    DEPARTMENT: 'DEPARTMENT',         // CSE, ECE, ME, etc.
-    LAB: 'LAB',                       // CCF, Software Lab, Workshop
-    LIBRARY: 'LIBRARY',               // Central Library
-    ADMIN: 'ADMIN'                    // Administrative Block
-};
+// ═══════════════════════════════════════════════════════════════════════════════
+// CAMPUS METER CONFIGURATION - NIT JALANDHAR
+// ═══════════════════════════════════════════════════════════════════════════════
 
-const CARBON_TAGS = {
-    GREEN: 'GREEN',     // Renewable solar energy
-    NORMAL: 'NORMAL'    // Punjab State Grid (coal/mixed)
-};
-
-// ============ NIT JALANDHAR METER CONFIGURATIONS ============
-// Based on typical consumption patterns for educational institutions in Punjab
-
-const METER_CONFIGS = {
-    // ========== SOLAR INSTALLATIONS ==========
-    // Main Building Rooftop Solar (100 kW capacity)
-    SOLAR_100KW: {
-        prefix: 'NITJ-SOLAR-MAIN',
-        carbonTag: CARBON_TAGS.GREEN,
-        baseOutput: 80.0,      // 80 kWh base per reading (accounting for efficiency)
-        variance: 15.0,
-        isProducer: true,
-        capacity: '100 kW',
-        location: 'Main Academic Block Rooftop',
-        // Punjab solar irradiance pattern (Jalandhar gets ~5.5 peak sun hours)
-        hourlyFactors: [
-            0, 0, 0, 0, 0, 0.05,           // 00:00 - 05:00 (no sun)
-            0.15, 0.35, 0.55, 0.75, 0.90, 0.95,  // 06:00 - 11:00 (sunrise ~6:30 AM)
-            1.0, 0.98, 0.90, 0.75, 0.55, 0.30,   // 12:00 - 17:00 (peak at noon)
-            0.10, 0, 0, 0, 0, 0             // 18:00 - 23:00 (sunset ~6:30 PM)
-        ]
+const CAMPUS_METERS = {
+    // Hostel Complex
+    'NITJ-MH1-001': {
+        name: 'Mega Hostel Block-1',
+        zone: 'HOSTEL',
+        baseLoad: 45,        // kW average
+        peakLoad: 120,       // kW peak
+        carbonTag: 'NORMAL',
+        occupancy: 500,      // students
+        floors: 6
+    },
+    'NITJ-MH2-002': {
+        name: 'Mega Hostel Block-2',
+        zone: 'HOSTEL',
+        baseLoad: 42,
+        peakLoad: 115,
+        carbonTag: 'NORMAL',
+        occupancy: 480,
+        floors: 6
+    },
+    'NITJ-GH1-003': {
+        name: 'Girls Hostel Block-1',
+        zone: 'HOSTEL',
+        baseLoad: 35,
+        peakLoad: 90,
+        carbonTag: 'NORMAL',
+        occupancy: 350,
+        floors: 5
     },
     
-    // Mega Hostel Rooftop Solar (75 kW capacity)
-    SOLAR_75KW: {
-        prefix: 'NITJ-SOLAR-MEGA',
-        carbonTag: CARBON_TAGS.GREEN,
-        baseOutput: 60.0,
-        variance: 12.0,
-        isProducer: true,
-        capacity: '75 kW',
-        location: 'Mega Boys Hostel Rooftop',
-        hourlyFactors: [
-            0, 0, 0, 0, 0, 0.05,
-            0.15, 0.35, 0.55, 0.75, 0.90, 0.95,
-            1.0, 0.98, 0.90, 0.75, 0.55, 0.30,
-            0.10, 0, 0, 0, 0, 0
-        ]
+    // Academic Buildings
+    'NITJ-MB1-004': {
+        name: 'Main Building',
+        zone: 'ACADEMIC',
+        baseLoad: 80,
+        peakLoad: 200,
+        carbonTag: 'GREEN',
+        rooftopSolar: 50     // kW installed
+    },
+    'NITJ-LH1-005': {
+        name: 'Lecture Hall Complex',
+        zone: 'ACADEMIC',
+        baseLoad: 60,
+        peakLoad: 150,
+        carbonTag: 'NORMAL'
+    },
+    'NITJ-CS1-006': {
+        name: 'Computer Science Block',
+        zone: 'ACADEMIC',
+        baseLoad: 55,
+        peakLoad: 130,
+        carbonTag: 'NORMAL',
+        servers: true
+    },
+    'NITJ-ECE-007': {
+        name: 'ECE Department',
+        zone: 'ACADEMIC',
+        baseLoad: 50,
+        peakLoad: 120,
+        carbonTag: 'NORMAL',
+        labs: 8
+    },
+    'NITJ-ME1-008': {
+        name: 'Mechanical Engineering',
+        zone: 'ACADEMIC',
+        baseLoad: 70,
+        peakLoad: 180,
+        carbonTag: 'NORMAL',
+        heavyMachinery: true
     },
     
-    // Library Rooftop Solar (50 kW capacity)
-    SOLAR_50KW: {
-        prefix: 'NITJ-SOLAR-LIBRARY',
-        carbonTag: CARBON_TAGS.GREEN,
-        baseOutput: 40.0,
-        variance: 8.0,
-        isProducer: true,
-        capacity: '50 kW',
-        location: 'Central Library Rooftop',
-        hourlyFactors: [
-            0, 0, 0, 0, 0, 0.05,
-            0.15, 0.35, 0.55, 0.75, 0.90, 0.95,
-            1.0, 0.98, 0.90, 0.75, 0.55, 0.30,
-            0.10, 0, 0, 0, 0, 0
-        ]
+    // Administrative
+    'NITJ-ADM-009': {
+        name: 'Administrative Block',
+        zone: 'ADMIN',
+        baseLoad: 40,
+        peakLoad: 80,
+        carbonTag: 'GREEN',
+        rooftopSolar: 30
     },
     
-    // Sports Complex Solar (25 kW capacity)
-    SOLAR_25KW: {
-        prefix: 'NITJ-SOLAR-SPORTS',
-        carbonTag: CARBON_TAGS.GREEN,
-        baseOutput: 20.0,
-        variance: 4.0,
-        isProducer: true,
-        capacity: '25 kW',
-        location: 'Sports Complex',
-        hourlyFactors: [
-            0, 0, 0, 0, 0, 0.05,
-            0.15, 0.35, 0.55, 0.75, 0.90, 0.95,
-            1.0, 0.98, 0.90, 0.75, 0.55, 0.30,
-            0.10, 0, 0, 0, 0, 0
-        ]
+    // Library
+    'NITJ-LIB-010': {
+        name: 'Central Library',
+        zone: 'LIBRARY',
+        baseLoad: 35,
+        peakLoad: 70,
+        carbonTag: 'RENEWABLE',
+        rooftopSolar: 40,
+        operatingHours: '08:00-22:00'
     },
     
-    // ========== HOSTELS ==========
-    // Mega Boys Hostel (~1500 students, highest consumption)
-    MEGA_HOSTEL: {
-        prefix: 'NITJ-MEGA-HOSTEL',
-        carbonTag: CARBON_TAGS.NORMAL,
-        baseOutput: 150.0,     // High base due to large occupancy
-        variance: 40.0,
-        isProducer: false,
-        capacity: '500 kVA',
-        location: 'Mega Boys Hostel, NIT Jalandhar',
-        occupancy: 1500,
-        // Hostel consumption: high morning (bathing), low day, peak evening (study/AC)
-        hourlyFactors: [
-            0.25, 0.20, 0.15, 0.15, 0.20, 0.45,  // 00:00 - 05:00 (night, some AC)
-            0.80, 0.95, 0.70, 0.35, 0.30, 0.40,  // 06:00 - 11:00 (morning rush)
-            0.50, 0.45, 0.40, 0.45, 0.55, 0.70,  // 12:00 - 17:00 (students in class)
-            0.90, 1.0, 1.0, 0.95, 0.70, 0.45     // 18:00 - 23:00 (evening peak, study)
-        ]
+    // Sports Complex
+    'NITJ-SPT-011': {
+        name: 'Sports Complex',
+        zone: 'SPORTS',
+        baseLoad: 25,
+        peakLoad: 100,       // Floodlights during events
+        carbonTag: 'NORMAL'
     },
     
-    // Regular Boys Hostels (BH-1, BH-2, BH-3, BH-4 - ~300 students each)
-    BOYS_HOSTEL: {
-        prefix: 'NITJ-BH',
-        carbonTag: CARBON_TAGS.NORMAL,
-        baseOutput: 35.0,
-        variance: 12.0,
-        isProducer: false,
-        capacity: '150 kVA',
-        location: 'Boys Hostel Block, NIT Jalandhar',
-        occupancy: 300,
-        hourlyFactors: [
-            0.25, 0.20, 0.15, 0.15, 0.20, 0.45,
-            0.80, 0.95, 0.70, 0.35, 0.30, 0.40,
-            0.50, 0.45, 0.40, 0.45, 0.55, 0.70,
-            0.90, 1.0, 1.0, 0.95, 0.70, 0.45
-        ]
+    // Central Workshop
+    'NITJ-WKS-012': {
+        name: 'Central Workshop',
+        zone: 'WORKSHOP',
+        baseLoad: 90,
+        peakLoad: 250,
+        carbonTag: 'NORMAL',
+        heavyMachinery: true
     },
     
-    // Girls Hostels (GH-1, GH-2)
-    GIRLS_HOSTEL: {
-        prefix: 'NITJ-GH',
-        carbonTag: CARBON_TAGS.NORMAL,
-        baseOutput: 30.0,
-        variance: 10.0,
-        isProducer: false,
-        capacity: '125 kVA',
-        location: 'Girls Hostel, NIT Jalandhar',
-        occupancy: 250,
-        hourlyFactors: [
-            0.25, 0.20, 0.15, 0.15, 0.20, 0.45,
-            0.80, 0.95, 0.70, 0.35, 0.30, 0.40,
-            0.50, 0.45, 0.40, 0.45, 0.55, 0.70,
-            0.90, 1.0, 1.0, 0.95, 0.70, 0.45
-        ]
+    // Research Centers
+    'NITJ-TBI-013': {
+        name: 'Technology Business Incubator',
+        zone: 'RESEARCH',
+        baseLoad: 30,
+        peakLoad: 60,
+        carbonTag: 'GREEN',
+        rooftopSolar: 25
     },
     
-    // ========== ACADEMIC DEPARTMENTS ==========
-    DEPARTMENT: {
-        prefix: 'NITJ-DEPT',
-        carbonTag: CARBON_TAGS.NORMAL,
-        baseOutput: 45.0,
-        variance: 15.0,
-        isProducer: false,
-        capacity: '200 kVA',
-        location: 'Academic Block, NIT Jalandhar',
-        // Working hours consumption (9 AM - 5 PM peak)
-        hourlyFactors: [
-            0.10, 0.10, 0.10, 0.10, 0.10, 0.10,  // 00:00 - 05:00 (security lights only)
-            0.15, 0.25, 0.70, 0.90, 1.0, 0.95,   // 06:00 - 11:00 (classes start 8:30)
-            0.70, 0.85, 1.0, 1.0, 0.90, 0.60,    // 12:00 - 17:00 (afternoon classes)
-            0.30, 0.20, 0.15, 0.12, 0.10, 0.10   // 18:00 - 23:00 (evening - mostly closed)
-        ]
+    // Faculty Housing
+    'NITJ-FH1-014': {
+        name: 'Faculty Housing Type-A',
+        zone: 'RESIDENTIAL',
+        baseLoad: 20,
+        peakLoad: 50,
+        carbonTag: 'NORMAL',
+        units: 24
     },
     
-    // ========== LABS ==========
-    LAB: {
-        prefix: 'NITJ-LAB',
-        carbonTag: CARBON_TAGS.NORMAL,
-        baseOutput: 60.0,      // High due to computers/equipment
-        variance: 20.0,
-        isProducer: false,
-        capacity: '250 kVA',
-        location: 'Laboratory Block, NIT Jalandhar',
-        // Lab hours with evening extension
-        hourlyFactors: [
-            0.08, 0.08, 0.08, 0.08, 0.08, 0.08,  // 00:00 - 05:00 (servers running)
-            0.12, 0.20, 0.75, 1.0, 1.0, 0.85,    // 06:00 - 11:00 (morning labs)
-            0.50, 0.80, 1.0, 1.0, 0.95, 0.70,    // 12:00 - 17:00 (afternoon labs)
-            0.50, 0.40, 0.25, 0.15, 0.10, 0.08   // 18:00 - 23:00 (some late labs)
-        ]
-    },
-    
-    // ========== CENTRAL LIBRARY ==========
-    LIBRARY: {
-        prefix: 'NITJ-LIBRARY',
-        carbonTag: CARBON_TAGS.NORMAL,
-        baseOutput: 35.0,
-        variance: 8.0,
-        isProducer: false,
-        capacity: '150 kVA',
-        location: 'Central Library, NIT Jalandhar',
-        // Library hours: 8 AM - 10 PM
-        hourlyFactors: [
-            0.10, 0.10, 0.10, 0.10, 0.10, 0.10,  // 00:00 - 05:00
-            0.12, 0.20, 0.60, 0.80, 0.90, 0.85,  // 06:00 - 11:00
-            0.70, 0.75, 0.85, 0.90, 0.95, 1.0,   // 12:00 - 17:00
-            1.0, 0.95, 0.80, 0.50, 0.15, 0.10    // 18:00 - 23:00 (closes 10 PM)
-        ]
-    },
-    
-    // ========== ADMINISTRATIVE BLOCK ==========
-    ADMIN: {
-        prefix: 'NITJ-ADMIN',
-        carbonTag: CARBON_TAGS.NORMAL,
-        baseOutput: 25.0,
-        variance: 6.0,
-        isProducer: false,
-        capacity: '100 kVA',
-        location: 'Administrative Block, NIT Jalandhar',
-        // Office hours: 9 AM - 5 PM
-        hourlyFactors: [
-            0.08, 0.08, 0.08, 0.08, 0.08, 0.08,  // 00:00 - 05:00
-            0.10, 0.15, 0.50, 0.90, 1.0, 0.95,   // 06:00 - 11:00
-            0.70, 0.85, 1.0, 1.0, 0.90, 0.40,    // 12:00 - 17:00
-            0.15, 0.10, 0.08, 0.08, 0.08, 0.08   // 18:00 - 23:00
-        ]
+    // Cafeteria
+    'NITJ-CAF-015': {
+        name: 'Central Cafeteria',
+        zone: 'AMENITY',
+        baseLoad: 45,
+        peakLoad: 100,
+        carbonTag: 'NORMAL',
+        peakMealTimes: ['12:00', '19:00']
     }
 };
 
-// Legacy type mappings for backward compatibility
-const LEGACY_METER_TYPES = {
-    SOLAR: 'SOLAR_100KW',
-    HOSTEL: 'BOYS_HOSTEL',
-    LAB: 'LAB'
+// Consumption patterns by hour (0-23) - multiplier
+const HOURLY_PATTERNS = {
+    HOSTEL: [0.3, 0.2, 0.2, 0.2, 0.3, 0.4, 0.7, 0.9, 0.6, 0.4, 0.4, 0.5, 
+             0.5, 0.4, 0.4, 0.5, 0.6, 0.8, 1.0, 1.0, 0.9, 0.8, 0.6, 0.4],
+    ACADEMIC: [0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.4, 0.7, 1.0, 1.0, 1.0, 0.9,
+               0.8, 1.0, 1.0, 1.0, 0.9, 0.6, 0.3, 0.2, 0.1, 0.1, 0.1, 0.1],
+    ADMIN: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.6, 1.0, 1.0, 1.0, 0.9,
+            0.8, 1.0, 1.0, 1.0, 0.8, 0.4, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1],
+    LIBRARY: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.5, 0.8, 1.0, 1.0, 0.9,
+              0.7, 0.8, 1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.5, 0.3, 0.1, 0.1],
+    SPORTS: [0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.5, 0.7, 0.4, 0.3, 0.3, 0.3,
+             0.3, 0.3, 0.4, 0.5, 0.7, 1.0, 1.0, 0.8, 0.5, 0.3, 0.2, 0.1],
+    WORKSHOP: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.6, 1.0, 1.0, 1.0, 0.8,
+               0.5, 0.8, 1.0, 1.0, 0.8, 0.4, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1],
+    RESEARCH: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.5, 0.8, 1.0, 1.0, 0.9,
+               0.8, 1.0, 1.0, 1.0, 0.9, 0.7, 0.5, 0.4, 0.3, 0.3, 0.2, 0.2],
+    RESIDENTIAL: [0.4, 0.3, 0.3, 0.3, 0.3, 0.4, 0.7, 0.9, 0.5, 0.3, 0.3, 0.4,
+                  0.5, 0.4, 0.4, 0.4, 0.5, 0.7, 0.9, 1.0, 0.9, 0.7, 0.5, 0.4],
+    AMENITY: [0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.5, 0.8, 0.6, 0.4, 0.4, 1.0,
+              0.9, 0.5, 0.4, 0.5, 0.6, 0.8, 1.0, 0.8, 0.5, 0.3, 0.2, 0.1]
 };
 
-// ============ DIGITAL SIGNATURE ============
+// ═══════════════════════════════════════════════════════════════════════════════
+// SMART METER SIMULATOR CLASS
+// ═══════════════════════════════════════════════════════════════════════════════
 
-/**
- * Generate a signing key pair for the meter
- * In production, this would be hardware-based
- */
-function generateMeterKeys() {
-    // Using HMAC-based signature for simplicity
-    // In production, use asymmetric keys (RSA/ECDSA)
-    const secretKey = crypto.randomBytes(32).toString('hex');
-    return { secretKey };
-}
+class SmartMeterSimulator {
+    constructor(config = {}) {
+        this.apiUrl = config.apiUrl || 'http://localhost:3000/api';
+        this.intervalId = null;
+        this.readings = [];
+        this.isRunning = false;
+        
+        console.log('\n╔═══════════════════════════════════════════════════════════════════╗');
+        console.log('║     NIT JALANDHAR - SMART METER SIMULATOR v2.0                    ║');
+        console.log('╚═══════════════════════════════════════════════════════════════════╝\n');
+        console.log(`📡 Configured ${Object.keys(CAMPUS_METERS).length} campus meters`);
+    }
 
-/**
- * Sign meter data for integrity verification
- */
-function signMeterData(data, secretKey) {
-    const dataString = JSON.stringify({
-        meterId: data.meterId,
-        kWh: data.kWh,
-        timestamp: data.timestamp,
-        carbonTag: data.carbonTag,
-        type: data.type
-    });
-    
-    const signature = crypto
-        .createHmac('sha256', secretKey)
-        .update(dataString)
-        .digest('hex');
-    
-    return signature;
-}
+    // ─────────────────────────────────────────────────────────────────────────
+    // READING GENERATION
+    // ─────────────────────────────────────────────────────────────────────────
 
-/**
- * Verify meter data signature
- */
-function verifySignature(data, signature, secretKey) {
-    const expectedSignature = signMeterData(data, secretKey);
-    return crypto.timingSafeEqual(
-        Buffer.from(signature, 'hex'),
-        Buffer.from(expectedSignature, 'hex')
-    );
-}
-
-/**
- * Generate data hash for blockchain (replay prevention)
- */
-function generateDataHash(data) {
-    const hashInput = `${data.meterId}:${data.kWh}:${data.timestamp}:${data.nonce}`;
-    return '0x' + crypto.createHash('sha256').update(hashInput).digest('hex');
-}
-
-// ============ METER SIMULATION ============
-
-class SmartMeter {
-    constructor(type, id = null) {
-        if (!METER_CONFIGS[type]) {
-            throw new Error(`Invalid meter type: ${type}`);
+    /**
+     * Generate realistic reading for a meter
+     */
+    generateReading(meterId, timestamp = Date.now()) {
+        const meter = CAMPUS_METERS[meterId];
+        if (!meter) {
+            throw new Error(`Unknown meter: ${meterId}`);
         }
         
-        this.config = METER_CONFIGS[type];
-        this.type = type;
-        this.meterId = id || `${this.config.prefix}-${uuidv4().slice(0, 8).toUpperCase()}`;
-        this.keys = generateMeterKeys();
-        this.readingCount = 0;
-        
-        console.log(`[METER] Initialized ${this.type} meter: ${this.meterId}`);
-    }
-    
-    /**
-     * Generate a single meter reading
-     */
-    generateReading(customTimestamp = null) {
-        const timestamp = customTimestamp || Date.now();
         const date = new Date(timestamp);
         const hour = date.getHours();
+        const dayOfWeek = date.getDay();
         
-        // Calculate energy based on time of day
-        const hourlyFactor = this.config.hourlyFactors[hour];
-        const baseEnergy = this.config.baseOutput * hourlyFactor;
-        const variance = (Math.random() - 0.5) * this.config.variance;
-        const kWh = Math.max(0, baseEnergy + variance);
+        // Get base pattern for zone
+        const pattern = HOURLY_PATTERNS[meter.zone] || HOURLY_PATTERNS.ACADEMIC;
+        const hourlyMultiplier = pattern[hour];
         
-        // Round to 3 decimal places
-        const roundedKWh = Math.round(kWh * 1000) / 1000;
+        // Weekend adjustment (lower consumption)
+        const weekendMultiplier = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.6 : 1.0;
         
-        // Generate unique nonce for this reading
-        const nonce = uuidv4();
+        // Seasonal adjustment (higher in summer for AC)
+        const month = date.getMonth();
+        const seasonalMultiplier = (month >= 3 && month <= 6) ? 1.3 : 1.0;  // Apr-Jul
         
-        const reading = {
-            meterId: this.meterId,
-            type: this.type,
-            kWh: roundedKWh,
-            kWhScaled: Math.round(roundedKWh * 1000), // For smart contract (no decimals)
-            timestamp: timestamp,
-            timestampISO: date.toISOString(),
-            carbonTag: this.config.carbonTag,
-            isProducer: this.config.isProducer,
-            nonce: nonce,
-            readingNumber: ++this.readingCount
-        };
+        // Random variation (±15%)
+        const randomVariation = 0.85 + (Math.random() * 0.30);
         
-        // Sign the reading
-        reading.signature = signMeterData(reading, this.keys.secretKey);
+        // Calculate consumption
+        const baseKw = meter.baseLoad + (meter.peakLoad - meter.baseLoad) * hourlyMultiplier;
+        const effectiveKw = baseKw * weekendMultiplier * seasonalMultiplier * randomVariation;
         
-        // Generate hash for blockchain
-        reading.dataHash = generateDataHash(reading);
+        // Convert to kWh (assuming 15-minute reading interval = 0.25 hours)
+        const kWh = effectiveKw * 0.25;
         
-        return reading;
-    }
-    
-    /**
-     * Verify a reading's signature
-     */
-    verifyReading(reading) {
-        return verifySignature(reading, reading.signature, this.keys.secretKey);
-    }
-    
-    /**
-     * Get meter info
-     */
-    getInfo() {
         return {
-            meterId: this.meterId,
-            type: this.type,
-            carbonTag: this.config.carbonTag,
-            isProducer: this.config.isProducer,
-            totalReadings: this.readingCount
+            meterId,
+            meterName: meter.name,
+            zone: meter.zone,
+            kWh: Math.round(kWh * 1000) / 1000,
+            powerKw: Math.round(effectiveKw * 10) / 10,
+            timestamp,
+            dateTime: date.toISOString(),
+            carbonTag: meter.carbonTag,
+            metadata: {
+                hour,
+                dayOfWeek,
+                hourlyMultiplier: Math.round(hourlyMultiplier * 100) / 100,
+                weekendMultiplier,
+                seasonalMultiplier
+            }
         };
     }
-}
 
-// ============ METER FLEET MANAGER ============
-
-class MeterFleet {
-    constructor() {
-        this.meters = new Map();
-    }
-    
     /**
-     * Add a meter to the fleet
+     * Generate readings for all meters
      */
-    addMeter(type, id = null) {
-        const meter = new SmartMeter(type, id);
-        this.meters.set(meter.meterId, meter);
-        return meter;
-    }
-    
-    /**
-     * Get a meter by ID
-     */
-    getMeter(meterId) {
-        return this.meters.get(meterId);
-    }
-    
-    /**
-     * Generate readings from all meters
-     */
-    generateAllReadings(customTimestamp = null) {
+    generateAllReadings(timestamp = Date.now()) {
         const readings = [];
-        for (const meter of this.meters.values()) {
-            readings.push(meter.generateReading(customTimestamp));
+        
+        for (const meterId of Object.keys(CAMPUS_METERS)) {
+            readings.push(this.generateReading(meterId, timestamp));
         }
+        
         return readings;
     }
-    
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // API SUBMISSION
+    // ─────────────────────────────────────────────────────────────────────────
+
     /**
-     * Get fleet status
+     * Submit reading to backend API
      */
-    getStatus() {
-        const status = {
-            totalMeters: this.meters.size,
-            producers: 0,
-            consumers: 0,
-            meters: []
-        };
-        
-        for (const meter of this.meters.values()) {
-            const info = meter.getInfo();
-            status.meters.push(info);
-            if (info.isProducer) status.producers++;
-            else status.consumers++;
+    async submitReading(reading) {
+        try {
+            const response = await axios.post(`${this.apiUrl}/transaction/complete`, {
+                meterId: reading.meterId,
+                kWh: reading.kWh,
+                timestamp: reading.timestamp,
+                carbonTag: reading.carbonTag,
+                payerWallet: this.getWalletForZone(reading.zone),
+                payeeWallet: 'PSPCL_GRID'
+            });
+            
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Failed to submit reading for ${reading.meterId}:`, 
+                          error.response?.data?.error || error.message);
+            return null;
         }
-        
-        return status;
     }
-}
 
-// ============ DEMO EXECUTION ============
-
-function runDemo() {
-    console.log('\n' + '='.repeat(60));
-    console.log('     NIT JALANDHAR SMART METER SIMULATOR - DEMO');
-    console.log('='.repeat(60) + '\n');
-    
-    // Create meter fleet for NIT Jalandhar
-    const fleet = new MeterFleet();
-    
-    // Add NIT Jalandhar campus meters
-    // Solar installations
-    fleet.addMeter(METER_TYPES.SOLAR_100KW, 'NITJ-SOLAR-MAIN');
-    fleet.addMeter(METER_TYPES.SOLAR_75KW, 'NITJ-SOLAR-MEGA');
-    fleet.addMeter(METER_TYPES.SOLAR_50KW, 'NITJ-SOLAR-LIBRARY');
-    
-    // Hostels
-    fleet.addMeter(METER_TYPES.MEGA_HOSTEL, 'NITJ-MEGA-HOSTEL');
-    fleet.addMeter(METER_TYPES.BOYS_HOSTEL, 'NITJ-BH1');
-    fleet.addMeter(METER_TYPES.BOYS_HOSTEL, 'NITJ-BH2');
-    fleet.addMeter(METER_TYPES.GIRLS_HOSTEL, 'NITJ-GH1');
-    
-    // Departments & Labs
-    fleet.addMeter(METER_TYPES.DEPARTMENT, 'NITJ-CSE-DEPT');
-    fleet.addMeter(METER_TYPES.LAB, 'NITJ-CCF');
-    fleet.addMeter(METER_TYPES.LIBRARY, 'NITJ-LIBRARY');
-    
-    console.log('\n📊 NIT JALANDHAR CAMPUS METER FLEET:');
-    console.log(JSON.stringify(fleet.getStatus(), null, 2));
-    
-    // Generate readings at different times
-    console.log('\n\n📈 SAMPLE READINGS AT DIFFERENT TIMES (IST):\n');
-    
-    const testHours = [6, 10, 14, 19, 22]; // Morning, late morning, afternoon, evening, night
-    
-    for (const hour of testHours) {
-        const testTime = new Date();
-        testTime.setHours(hour, 0, 0, 0);
-        
-        console.log(`\n⏰ Time: ${testTime.toLocaleTimeString()} (${hour}:00 IST)`);
-        console.log('-'.repeat(60));
-        
-        const readings = fleet.generateAllReadings(testTime.getTime());
+    /**
+     * Submit all readings
+     */
+    async submitAllReadings(readings) {
+        const results = [];
         
         for (const reading of readings) {
-            const icon = reading.isProducer ? '☀️' : '⚡';
-            const tag = reading.carbonTag === 'GREEN' ? '🌱' : '🏭';
-            console.log(`${icon} ${reading.meterId.padEnd(22)} | ${reading.kWh.toFixed(2).padStart(10)} kWh | ${tag} ${reading.carbonTag}`);
+            const result = await this.submitReading(reading);
+            if (result) {
+                results.push(result);
+                console.log(`✅ ${reading.meterId}: ${reading.kWh} kWh → ₹${result.data.pricing.total.toFixed(2)}`);
+            }
+            
+            // Small delay between submissions
+            await this.sleep(200);
         }
+        
+        return results;
     }
-    
-    // Show sample reading structure
-    console.log('\n\n📋 SAMPLE READING STRUCTURE (JSON):');
-    console.log('-'.repeat(50));
-    const sampleMeter = fleet.getMeter('NITJ-SOLAR-MAIN');
-    const sampleReading = sampleMeter.generateReading();
-    console.log(JSON.stringify(sampleReading, null, 2));
-    
-    // Verify signature
-    console.log('\n\n🔐 SIGNATURE VERIFICATION:');
-    console.log('-'.repeat(50));
-    const isValid = sampleMeter.verifyReading(sampleReading);
-    console.log(`Reading signature valid: ${isValid ? '✅ YES' : '❌ NO'}`);
-    
-    // Tamper test
-    const tamperedReading = { ...sampleReading, kWh: 999.999 };
-    const isTamperedValid = sampleMeter.verifyReading(tamperedReading);
-    console.log(`Tampered reading valid: ${isTamperedValid ? '✅ YES' : '❌ NO (ATTACK DETECTED!)'}`);
-    
-    console.log('\n' + '='.repeat(60));
-    console.log('                    DEMO COMPLETE');
-    console.log('         NIT Jalandhar Campus Energy System');
-    console.log('='.repeat(60) + '\n');
+
+    /**
+     * Get wallet ID for zone
+     */
+    getWalletForZone(zone) {
+        const zoneWalletMap = {
+            'HOSTEL': 'NITJ_HOSTELS',
+            'ACADEMIC': 'NITJ_ACADEMIC',
+            'ADMIN': 'NITJ_ADMIN',
+            'LIBRARY': 'NITJ_LIBRARY',
+            'SPORTS': 'NITJ_SPORTS',
+            'WORKSHOP': 'NITJ_WORKSHOP',
+            'RESEARCH': 'NITJ_ACADEMIC',
+            'RESIDENTIAL': 'NITJ_MAIN',
+            'AMENITY': 'NITJ_MAIN'
+        };
+        
+        return zoneWalletMap[zone] || 'NITJ_MAIN';
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SIMULATION CONTROL
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Run single simulation cycle
+     */
+    async runCycle() {
+        console.log('\n📊 Running simulation cycle...');
+        const timestamp = Date.now();
+        
+        const readings = this.generateAllReadings(timestamp);
+        const results = await this.submitAllReadings(readings);
+        
+        // Summary
+        const totalKwh = readings.reduce((sum, r) => sum + r.kWh, 0);
+        const totalAmount = results.reduce((sum, r) => sum + (r?.data?.pricing?.total || 0), 0);
+        
+        console.log('\n' + '─'.repeat(60));
+        console.log(`📈 Cycle Summary:`);
+        console.log(`   Meters: ${readings.length}`);
+        console.log(`   Total Energy: ${totalKwh.toFixed(3)} kWh`);
+        console.log(`   Total Amount: ₹${totalAmount.toFixed(2)}`);
+        console.log(`   Successful: ${results.length}/${readings.length}`);
+        console.log('─'.repeat(60));
+        
+        return { readings, results, totalKwh, totalAmount };
+    }
+
+    /**
+     * Start continuous simulation
+     */
+    start(intervalMs = 60000) {
+        if (this.isRunning) {
+            console.log('⚠️ Simulator already running');
+            return;
+        }
+        
+        this.isRunning = true;
+        console.log(`🚀 Starting continuous simulation (interval: ${intervalMs/1000}s)`);
+        
+        // Run immediately
+        this.runCycle();
+        
+        // Schedule periodic runs
+        this.intervalId = setInterval(() => {
+            this.runCycle();
+        }, intervalMs);
+    }
+
+    /**
+     * Stop simulation
+     */
+    stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+        this.isRunning = false;
+        console.log('⏹️ Simulator stopped');
+    }
+
+    /**
+     * Run demo with specific scenarios
+     */
+    async runDemo() {
+        console.log('\n🎬 Running NIT Jalandhar Energy Trade Demo\n');
+        console.log('═'.repeat(60));
+        
+        // Scenario 1: Morning readings
+        console.log('\n📌 Scenario 1: Morning Campus Activity (9 AM)');
+        const morningTime = new Date();
+        morningTime.setHours(9, 0, 0);
+        
+        const morningMeters = ['NITJ-MB1-004', 'NITJ-LH1-005', 'NITJ-ADM-009'];
+        for (const meterId of morningMeters) {
+            const reading = this.generateReading(meterId, morningTime.getTime());
+            console.log(`   ${reading.meterName}: ${reading.kWh.toFixed(3)} kWh (${reading.powerKw} kW)`);
+            await this.submitReading(reading);
+            await this.sleep(500);
+        }
+        
+        // Scenario 2: Peak hostel evening
+        console.log('\n📌 Scenario 2: Evening Hostel Peak (8 PM)');
+        const eveningTime = new Date();
+        eveningTime.setHours(20, 0, 0);
+        
+        const hostelMeters = ['NITJ-MH1-001', 'NITJ-MH2-002', 'NITJ-GH1-003'];
+        for (const meterId of hostelMeters) {
+            const reading = this.generateReading(meterId, eveningTime.getTime());
+            console.log(`   ${reading.meterName}: ${reading.kWh.toFixed(3)} kWh (${reading.powerKw} kW)`);
+            await this.submitReading(reading);
+            await this.sleep(500);
+        }
+        
+        // Scenario 3: Green energy sources
+        console.log('\n📌 Scenario 3: Green Energy Buildings');
+        const greenMeters = ['NITJ-MB1-004', 'NITJ-LIB-010', 'NITJ-TBI-013'];
+        for (const meterId of greenMeters) {
+            const reading = this.generateReading(meterId);
+            console.log(`   ${reading.meterName} [${reading.carbonTag}]: ${reading.kWh.toFixed(3)} kWh`);
+            await this.submitReading(reading);
+            await this.sleep(500);
+        }
+        
+        console.log('\n✅ Demo completed!');
+        console.log('═'.repeat(60));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // UTILITY
+    // ─────────────────────────────────────────────────────────────────────────
+
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    getMeters() {
+        return CAMPUS_METERS;
+    }
+
+    getMeterInfo(meterId) {
+        return CAMPUS_METERS[meterId];
+    }
 }
 
-// ============ EXPORTS ============
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN EXECUTION
+// ═══════════════════════════════════════════════════════════════════════════════
 
-module.exports = {
-    SmartMeter,
-    MeterFleet,
-    METER_TYPES,
-    METER_CONFIGS,
-    verifySignature,
-    generateDataHash
-};
+const simulator = new SmartMeterSimulator();
 
-// Run demo if executed directly
-if (require.main === module) {
-    runDemo();
+// Parse command line arguments
+const args = process.argv.slice(2);
+
+if (args.includes('--demo')) {
+    simulator.runDemo().catch(console.error);
+} else if (args.includes('--cycle')) {
+    simulator.runCycle().catch(console.error);
+} else if (args.includes('--start')) {
+    const interval = parseInt(args[args.indexOf('--start') + 1]) || 60000;
+    simulator.start(interval);
+    
+    // Graceful shutdown
+    process.on('SIGINT', () => {
+        simulator.stop();
+        process.exit(0);
+    });
+} else {
+    console.log('Usage:');
+    console.log('  node simulator.js --demo      Run demo scenarios');
+    console.log('  node simulator.js --cycle     Run single cycle');
+    console.log('  node simulator.js --start [ms] Start continuous simulation');
 }
+
+module.exports = SmartMeterSimulator;

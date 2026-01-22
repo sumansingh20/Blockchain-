@@ -3,26 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NIT Jalandhar Campus Energy Trade - Blockchain-based Energy Trading with CBDC Settlement">
-    <meta name="theme-color" content="#1e3a5f">
-    <title>NIT Jalandhar - Campus Energy Trade System</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <title>Campus Energy Trade | NIT Jalandhar</title>
+    <meta name="description" content="Blockchain-based Campus Energy Trading System with CBDC Settlement">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #1e3a5f;
-            --primary-light: #2c5282;
-            --primary-dark: #0d2137;
-            --secondary: #f39c12;
-            --success: #27ae60;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --info: #3b82f6;
-            --dark: #1f2937;
-            --light: #f3f4f6;
-            --white: #ffffff;
-            --gray: #9ca3af;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
         }
 
         * {
@@ -31,107 +39,78 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary-dark) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
-            color: var(--dark);
+            line-height: 1.6;
         }
 
-        .container {
-            max-width: 1440px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* HEADER */
-        header {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px 32px;
-            margin-bottom: 32px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            border-bottom: 4px solid var(--secondary);
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
             position: sticky;
-            top: 20px;
+            top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
         }
 
-        .logo-section {
+        .logo {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 1rem;
         }
 
         .logo-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-3);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--white);
-            font-size: 32px;
-            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
+            font-size: 1.5rem;
         }
 
         .logo-text h1 {
-            font-size: 1.8rem;
-            color: var(--primary);
+            font-size: 1.25rem;
             font-weight: 700;
-            margin: 0;
+            color: var(--text-primary);
         }
 
         .logo-text p {
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        .header-status {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
         }
 
         .status-badge {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background: #dcfce7;
-            color: #166534;
-            border-radius: 24px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.2);
-        }
-
-        .status-badge.offline {
-            background: #fee2e2;
-            color: #991b1b;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--success);
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
+            background: var(--success);
             border-radius: 50%;
-            background: currentColor;
             animation: pulse 2s infinite;
         }
 
@@ -140,101 +119,34 @@
             50% { opacity: 0.5; }
         }
 
-        .refresh-btn {
-            padding: 10px 20px;
-            background: var(--primary);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* Main Layout */
+        .main {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        .refresh-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
-        }
-
-        .refresh-btn.loading i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-
-        /* GRID */
-        .grid {
+        /* Stats Grid */
+        .stats-grid {
             display: grid;
-            gap: 24px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .grid-4 {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-        }
-
-        /* CARDS */
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 28px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid var(--light);
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .card-title i {
-            color: var(--secondary);
-            font-size: 1.5rem;
-        }
-
-        .card-subtitle {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 4px;
-        }
-
-        /* STAT CARDS */
         .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
             position: relative;
             overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .stat-card::before {
@@ -243,111 +155,221 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--secondary), var(--success));
+            height: 3px;
         }
 
+        .stat-card:nth-child(1)::before { background: var(--gradient-3); }
+        .stat-card:nth-child(2)::before { background: var(--gradient-1); }
+        .stat-card:nth-child(3)::before { background: var(--success); }
+        .stat-card:nth-child(4)::before { background: var(--gradient-2); }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card:nth-child(1) .stat-icon { background: rgba(79, 172, 254, 0.15); }
+        .stat-card:nth-child(2) .stat-icon { background: rgba(102, 126, 234, 0.15); }
+        .stat-card:nth-child(3) .stat-icon { background: rgba(16, 185, 129, 0.15); }
+        .stat-card:nth-child(4) .stat-icon { background: rgba(245, 87, 108, 0.15); }
+
         .stat-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 16px 0;
-            line-height: 1;
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.25rem;
         }
 
         .stat-label {
-            font-size: 0.95rem;
-            color: var(--gray);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
         }
 
-        .stat-icon {
-            font-size: 2rem;
-            color: var(--secondary);
-            margin-bottom: 12px;
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 1.5rem;
         }
 
-        /* TABLE */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: var(--light);
-            padding: 16px;
-            text-align: left;
-            font-weight: 700;
-            color: var(--dark);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 0.95rem;
-        }
-
-        tr:hover {
-            background: var(--light);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .badge-warning {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-info {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        /* PROGRESS BAR */
-        .progress {
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             overflow: hidden;
-            margin-top: 12px;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--secondary) 0%, var(--success) 100%);
-            border-radius: 4px;
-            transition: width 0.5s ease;
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* WALLET LIST */
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Transactions Table */
+        .transactions-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .transaction-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .tx-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .tx-icon.receipt { background: rgba(79, 172, 254, 0.15); }
+        .tx-icon.token { background: rgba(245, 158, 11, 0.15); }
+        .tx-icon.settlement { background: rgba(16, 185, 129, 0.15); }
+
+        .tx-details h4 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .tx-details p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tx-amount {
+            text-align: right;
+        }
+
+        .tx-amount .value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tx-amount .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Wallet List */
         .wallet-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background 0.2s;
-        }
-
-        .wallet-item:hover {
-            background: var(--light);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
         }
 
         .wallet-item:last-child {
@@ -357,499 +379,583 @@
         .wallet-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex: 1;
+            gap: 0.75rem;
         }
 
-        .wallet-icon {
-            width: 48px;
-            height: 48px;
+        .wallet-avatar {
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            background: var(--light);
+            font-size: 1rem;
+            background: var(--bg-dark);
         }
 
-        .wallet-details h4 {
-            margin: 0;
-            font-size: 0.95rem;
-            color: var(--dark);
-            font-weight: 600;
+        .wallet-name {
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
-        .wallet-details p {
-            margin: 4px 0 0 0;
-            font-size: 0.85rem;
-            color: var(--gray);
+        .wallet-id {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .wallet-balance {
-            font-weight: 700;
-            color: var(--success);
-            text-align: right;
-        }
-
-        /* CHARTS */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-top: 16px;
-        }
-
-        /* FOOTER */
-        footer {
-            text-align: center;
-            padding: 32px 20px;
-            color: rgba(255, 255, 255, 0.9);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 48px;
-        }
-
-        footer p {
-            margin: 8px 0;
-            font-size: 0.95rem;
-        }
-
-        footer a {
-            color: var(--secondary);
-            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
             font-weight: 600;
+            color: var(--success);
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        /* ALERTS */
-        .alert {
-            padding: 16px 20px;
-            border-radius: 8px;
-            margin-bottom: 16px;
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
         }
 
-        .alert-success {
-            background: #dcfce7;
-            color: #166534;
-            border-left: 4px solid var(--success);
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        .alert-warning {
-            background: #fef3c7;
-            color: #92400e;
-            border-left: 4px solid var(--warning);
+        /* Tariff Info */
+        .tariff-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
         }
 
-        .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border-left: 4px solid var(--info);
+        .tariff-item {
+            background: var(--bg-dark);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-            .grid-2 { grid-template-columns: 1fr; }
+        .tariff-period {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
         }
 
-        @media (max-width: 768px) {
-            header {
-                padding: 16px 20px;
-                position: relative;
-                top: 0;
+        .tariff-rate {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tariff-item.active {
+            border: 2px solid var(--primary);
+        }
+
+        .tariff-item.active .tariff-rate {
+            color: var(--primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
             }
+        }
 
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .header-content {
                 flex-direction: column;
-                align-items: flex-start;
+                gap: 1rem;
             }
-
-            .stat-value {
-                font-size: 2rem;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            th, td {
-                padding: 12px;
-                font-size: 0.85rem;
+            
+            .form-row {
+                grid-template-columns: 1fr;
             }
         }
 
-        /* ANIMATIONS */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .card {
-            animation: slideIn 0.5s ease forwards;
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
         }
 
-        .card:nth-child(2) { animation-delay: 0.1s; }
-        .card:nth-child(3) { animation-delay: 0.2s; }
-        .card:nth-child(4) { animation-delay: 0.3s; }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <header>
-            <div class="header-content">
-                <div class="logo-section">
-                    <div class="logo-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <div class="logo-text">
-                        <h1>NIT Jalandhar Energy</h1>
-                        <p>Blockchain-based Campus Energy Trading | CBDC Settlement</p>
-                    </div>
-                </div>
-                <div class="header-status">
-                    <div class="status-badge" id="statusBadge">
-                        <span class="status-dot"></span>
-                        <span>Connecting...</span>
-                    </div>
-                    <button class="refresh-btn" onclick="loadDashboard()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <div class="logo-text">
+                    <h1>Campus Energy Trade</h1>
+                    <p>Dr B R Ambedkar NIT Jalandhar</p>
                 </div>
             </div>
-        </header>
-
-        <!-- KEY METRICS -->
-        <div class="grid grid-4">
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-solar-panel"></i>
-                </div>
-                <div class="stat-value" id="solarProduced">0.00</div>
-                <div class="stat-label">Solar Produced (kWh)</div>
-                <div class="card-subtitle">GREEN Energy</div>
-            </div>
-
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-plug"></i>
-                </div>
-                <div class="stat-value" id="gridConsumed">0.00</div>
-                <div class="stat-label">Grid Consumed (kWh)</div>
-                <div class="card-subtitle">Total Usage</div>
-            </div>
-
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-rupee-sign"></i>
-                </div>
-                <div class="stat-value" id="totalSettled">₹0.00</div>
-                <div class="stat-label">Total Settled (e₹)</div>
-                <div class="card-subtitle">CBDC Transactions</div>
-            </div>
-
-            <div class="card stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-leaf"></i>
-                </div>
-                <div class="stat-value" id="greenPercent">0%</div>
-                <div class="stat-label">Green Energy %</div>
-                <div class="progress">
-                    <div class="progress-fill" id="greenBar" style="width: 0%"></div>
-                </div>
+            <div class="status-badge" id="statusBadge">
+                <span class="status-dot"></span>
+                <span>Blockchain Connected</span>
             </div>
         </div>
+    </header>
 
-        <!-- MAIN CONTENT -->
-        <div class="grid grid-3">
-            <!-- BLOCKCHAIN STATS -->
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Stats Grid -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="statReceipts">0</div>
+                <div class="stat-label">Energy Receipts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🪙</div>
+                <div class="stat-value" id="statTokens">0</div>
+                <div class="stat-label">Tokens Minted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="statEnergy">0 kWh</div>
+                <div class="stat-label">Total Energy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="statSettlement">₹0</div>
+                <div class="stat-label">CBDC Settled</div>
+            </div>
+        </section>
+
+        <!-- Content Grid -->
+        <section class="content-grid">
+            <!-- Transaction Form & History -->
             <div class="card">
                 <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-cubes"></i>
-                            Blockchain Stats
+                    <h2 class="card-title">📝 New Energy Transaction</h2>
+                </div>
+                <div class="card-body">
+                    <form id="transactionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Meter ID</label>
+                                <select class="form-select" id="meterId" required>
+                                    <option value="">Select meter...</option>
+                                    <optgroup label="🏠 Hostels">
+                                        <option value="NITJ-MH1-001">NITJ-MH1-001 - Mega Hostel Block-1</option>
+                                        <option value="NITJ-MH2-002">NITJ-MH2-002 - Mega Hostel Block-2</option>
+                                        <option value="NITJ-GH1-003">NITJ-GH1-003 - Girls Hostel</option>
+                                    </optgroup>
+                                    <optgroup label="🎓 Academic">
+                                        <option value="NITJ-MB1-004">NITJ-MB1-004 - Main Building</option>
+                                        <option value="NITJ-LH1-005">NITJ-LH1-005 - Lecture Hall</option>
+                                        <option value="NITJ-CS1-006">NITJ-CS1-006 - CS Block</option>
+                                        <option value="NITJ-ECE-007">NITJ-ECE-007 - ECE Dept</option>
+                                        <option value="NITJ-ME1-008">NITJ-ME1-008 - Mechanical</option>
+                                    </optgroup>
+                                    <optgroup label="🏛️ Administrative">
+                                        <option value="NITJ-ADM-009">NITJ-ADM-009 - Admin Block</option>
+                                        <option value="NITJ-LIB-010">NITJ-LIB-010 - Library</option>
+                                    </optgroup>
+                                    <optgroup label="⚙️ Facilities">
+                                        <option value="NITJ-SPT-011">NITJ-SPT-011 - Sports Complex</option>
+                                        <option value="NITJ-WKS-012">NITJ-WKS-012 - Workshop</option>
+                                        <option value="NITJ-CAF-015">NITJ-CAF-015 - Cafeteria</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Energy (kWh)</label>
+                                <input type="number" class="form-input" id="kWh" placeholder="e.g., 25.5" 
+                                       step="0.001" min="0.001" max="1000" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Carbon Tag</label>
+                                <select class="form-select" id="carbonTag">
+                                    <option value="NORMAL">NORMAL - Grid Power</option>
+                                    <option value="GREEN">GREEN - Low Carbon</option>
+                                    <option value="RENEWABLE">RENEWABLE - Solar/Wind</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Payer Wallet</label>
+                                <select class="form-select" id="payerWallet">
+                                    <option value="NITJ_MAIN">NITJ_MAIN - Main Account</option>
+                                    <option value="NITJ_HOSTELS">NITJ_HOSTELS - Hostels</option>
+                                    <option value="NITJ_ACADEMIC">NITJ_ACADEMIC - Academic</option>
+                                    <option value="NITJ_SPORTS">NITJ_SPORTS - Sports</option>
+                                    <option value="NITJ_WORKSHOP">NITJ_WORKSHOP - Workshop</option>
+                                    <option value="NITJ_LIBRARY">NITJ_LIBRARY - Library</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                            ⚡ Record & Settle Transaction
+                        </button>
+                    </form>
+
+                    <!-- Tariff Info -->
+                    <div style="margin-top: 1.5rem;">
+                        <div class="form-label" style="margin-bottom: 0.75rem;">📊 PSPCL Tariff Rates</div>
+                        <div class="tariff-grid" id="tariffGrid">
+                            <div class="tariff-item" id="tariffNormal">
+                                <div class="tariff-period">NORMAL (6AM-6PM)</div>
+                                <div class="tariff-rate">₹6.79/kWh</div>
+                            </div>
+                            <div class="tariff-item" id="tariffPeak">
+                                <div class="tariff-period">PEAK (6PM-10PM)</div>
+                                <div class="tariff-rate">₹8.15/kWh</div>
+                            </div>
+                            <div class="tariff-item" id="tariffOffPeak">
+                                <div class="tariff-period">OFF-PEAK (10PM-6AM)</div>
+                                <div class="tariff-rate">₹6.11/kWh</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div style="display: grid; gap: 20px;">
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Total Receipts</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="totalReceipts">0</div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Tokens Minted</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--success);" id="totalTokens">0</div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">Settlements</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary);" id="totalSettlements">0</div>
+
+                <!-- Transaction History -->
+                <div class="card-header" style="border-top: 1px solid var(--border);">
+                    <h2 class="card-title">📜 Recent Transactions</h2>
+                </div>
+                <div class="transactions-container" id="transactionsContainer">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No transactions yet. Submit your first energy reading above!</p>
                     </div>
                 </div>
             </div>
 
-            <!-- PSPCL TARIFF -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-bolt"></i>
-                            PSPCL Tariff
-                        </div>
+            <!-- Wallets Panel -->
+            <div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <h2 class="card-title">💳 CBDC (e₹) Wallets</h2>
+                        <button class="btn btn-primary" onclick="refreshWallets()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                    <div id="walletsContainer">
+                        <!-- Wallets will be loaded here -->
                     </div>
                 </div>
-                <div style="display: grid; gap: 16px;">
-                    <div style="padding: 12px; background: var(--light); border-radius: 8px;">
-                        <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 4px;">Base Rate</div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--primary);">₹6.79/kWh</div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="padding: 12px; background: #fef3c7; border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: #92400e; font-weight: 600;">Peak (6-10 PM)</div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: #92400e;">1.2x</div>
-                        </div>
-                        <div style="padding: 12px; background: #dcfce7; border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: #166534; font-weight: 600;">Night Rebate</div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: #166534;">0.9x</div>
-                        </div>
-                    </div>
-                    <div style="padding: 12px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid var(--success);">
-                        <div style="font-size: 0.85rem; color: #166534; font-weight: 600;">🌱 Solar Incentive</div>
-                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--success);">15% Discount</div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- ENERGY FLOW -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-chart-line"></i>
-                            Energy Flow
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">ℹ️ System Info</h2>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Institution:</strong> Dr B R Ambedkar NIT Jalandhar
+                            </p>
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Blockchain:</strong> Ethereum (Local Hardhat)
+                            </p>
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Contract:</strong> EnergyLedger v2.0
+                            </p>
+                            <p style="margin-bottom: 0.75rem;">
+                                <strong>Tariff:</strong> PSPCL Punjab 2024
+                            </p>
+                            <p>
+                                <strong>Settlement:</strong> RBI CBDC (e₹) Simulation
+                            </p>
                         </div>
                     </div>
                 </div>
-                <div style="display: grid; gap: 20px;">
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">Net Energy</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary);" id="netEnergy">+0.00 kWh</div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray); font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">Green Energy</div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);" id="greenEnergy">0.00 kWh</div>
-                    </div>
-                </div>
             </div>
-        </div>
+        </section>
+    </main>
 
-        <!-- TRANSACTIONS & WALLETS -->
-        <div class="grid grid-2">
-            <!-- RECENT TRANSACTIONS -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-history"></i>
-                            Recent Transactions
-                        </div>
-                    </div>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Receipt</th>
-                                <th>Meter</th>
-                                <th>kWh</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionsBody">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: var(--gray);">
-                                    <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
-                                    No transactions yet
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TOP WALLETS -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">
-                            <i class="fas fa-wallet"></i>
-                            Top Campus Wallets
-                        </div>
-                    </div>
-                </div>
-                <div id="walletsList">
-                    <div style="text-align: center; color: var(--gray); padding: 40px 20px;">
-                        <i class="fas fa-wallet" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
-                        Loading wallets...
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- BLOCKCHAIN HASHES -->
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <div class="card-title">
-                        <i class="fas fa-link"></i>
-                        Blockchain Transactions
-                    </div>
-                    <div class="card-subtitle">Immutable records on Ethereum/Polygon network</div>
-                </div>
-            </div>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Receipt ID</th>
-                            <th>Transaction Hash</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="hashesBody">
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: var(--gray);">
-                                <i class="fas fa-link" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px; display: block;"></i>
-                                No blockchain transactions yet
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- FOOTER -->
-        <footer>
-            <p>🏛️ Dr B R Ambedkar National Institute of Technology, Jalandhar</p>
-            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">GT Road Bypass, Jalandhar, Punjab 144027 | PSPCL Large Supply Category</p>
-            <p style="margin-top: 16px; font-size: 0.85rem;">
-                Built with Solidity • ethers.js • Express.js • Node.js | 
-                <a href="https://github.com/yourusername/nit-campus-energy" target="_blank">View on GitHub</a>
-            </p>
-        </footer>
-    </div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        const API_BASE = window.location.origin;
-        let refreshInterval;
+        // Configuration
+        const API_URL = '/api';
+        let transactions = [];
 
-        async function loadDashboard() {
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkHealth();
+            loadStatistics();
+            refreshWallets();
+            updateTariffHighlight();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                loadStatistics();
+                refreshWallets();
+            }, 30000);
+        });
+
+        // Check server health
+        async function checkHealth() {
             try {
-                // Check API health
-                const healthRes = await fetch(`${API_BASE}/api/health`);
-                const health = await healthRes.json();
-
-                const statusBadge = document.getElementById('statusBadge');
-                if (health.blockchain === 'connected') {
-                    statusBadge.className = 'status-badge';
-                    statusBadge.innerHTML = '<span class="status-dot"></span><span>Connected</span>';
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                
+                const badge = document.getElementById('statusBadge');
+                if (data.status === 'healthy') {
+                    badge.innerHTML = '<span class="status-dot"></span><span>Blockchain Connected</span>';
+                    badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                    badge.style.color = 'var(--success)';
                 } else {
-                    statusBadge.className = 'status-badge offline';
-                    statusBadge.innerHTML = '<span class="status-dot"></span><span>Disconnected</span>';
-                    return;
+                    badge.innerHTML = '<span class="status-dot" style="background: var(--warning)"></span><span>Limited Mode</span>';
+                    badge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                    badge.style.color = 'var(--warning)';
                 }
-
-                // Load summary
-                const summaryRes = await fetch(`${API_BASE}/api/dashboard/summary`);
-                const summaryData = await summaryRes.json();
-                const summary = summaryData.summary || summaryData;
-
-                // Update key metrics
-                document.getElementById('solarProduced').textContent = (summary.energy?.totalProduced || 0).toFixed(2);
-                document.getElementById('gridConsumed').textContent = (summary.energy?.totalConsumed || 0).toFixed(2);
-                document.getElementById('totalSettled').textContent = `₹${((summary.cbdc?.totalSettledINR || 0) / 100).toFixed(2)}`;
-                document.getElementById('netEnergy').textContent = `${(summary.energy?.netEnergy || 0).toFixed(2)} kWh`;
-                document.getElementById('greenEnergy').textContent = `${(summary.energy?.greenEnergy || 0).toFixed(2)} kWh`;
-
-                const greenPct = summary.energy?.greenPercentage ? parseInt(summary.energy.greenPercentage) : 0;
-                document.getElementById('greenPercent').textContent = `${greenPct}%`;
-                document.getElementById('greenBar').style.width = `${greenPct}%`;
-
-                // Blockchain stats
-                document.getElementById('totalReceipts').textContent = summary.blockchain?.totalReceipts || 0;
-                document.getElementById('totalTokens').textContent = summary.blockchain?.totalTokens || 0;
-                document.getElementById('totalSettlements').textContent = summary.blockchain?.totalSettlements || 0;
-
-                // Transactions
-                const txBody = document.getElementById('transactionsBody');
-                if (summary.blockchain?.recentTransactions?.length) {
-                    txBody.innerHTML = summary.blockchain.recentTransactions.slice(0, 10).map(tx => `
-                        <tr>
-                            <td><span class="badge badge-success">#${tx.receiptId}</span></td>
-                            <td style="font-family: monospace; font-size: 0.85rem;">${tx.meterId}</td>
-                            <td>${tx.kWh.toFixed(2)}</td>
-                            <td><strong>₹${(tx.amount / 100).toFixed(2)}</strong></td>
-                        </tr>
-                    `).join('');
-                }
-
-                // Wallets
-                const walletsList = document.getElementById('walletsList');
-                if (summary.cbdc?.topWallets?.length) {
-                    walletsList.innerHTML = summary.cbdc.topWallets.slice(0, 8).map((wallet, idx) => `
-                        <div class="wallet-item">
-                            <div class="wallet-info">
-                                <div class="wallet-icon">
-                                    ${getWalletIcon(wallet.name)}
-                                </div>
-                                <div class="wallet-details">
-                                    <h4>${wallet.name}</h4>
-                                    <p>${wallet.id}</p>
-                                </div>
-                            </div>
-                            <div class="wallet-balance">
-                                ₹${(wallet.balance / 100).toFixed(2)}
-                            </div>
-                        </div>
-                    `).join('');
-                }
-
             } catch (error) {
-                console.error('Dashboard load error:', error);
+                const badge = document.getElementById('statusBadge');
+                badge.innerHTML = '<span class="status-dot" style="background: var(--danger)"></span><span>Disconnected</span>';
+                badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                badge.style.color = 'var(--danger)';
             }
         }
 
-        function getWalletIcon(name) {
-            if (name.includes('SOLAR')) return '☀️';
-            if (name.includes('HOSTEL')) return '🏢';
-            if (name.includes('LIBRARY')) return '📚';
-            if (name.includes('LAB')) return '🔬';
-            if (name.includes('DEPT')) return '🏛️';
-            if (name.includes('TREASURY')) return '💰';
-            return '💳';
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_URL}/statistics`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data.blockchain;
+                    document.getElementById('statReceipts').textContent = stats.receipts || 0;
+                    document.getElementById('statTokens').textContent = stats.tokens || 0;
+                    document.getElementById('statEnergy').textContent = `${(stats.totalEnergy || 0).toFixed(1)} kWh`;
+                    document.getElementById('statSettlement').textContent = `₹${(stats.settlementValue || 0).toLocaleString('en-IN')}`;
+                }
+            } catch (error) {
+                console.error('Failed to load statistics:', error);
+            }
         }
 
-        // Load on page load
-        loadDashboard();
+        // Refresh wallets
+        async function refreshWallets() {
+            try {
+                const response = await fetch(`${API_URL}/wallet/all`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('walletsContainer');
+                    const wallets = data.data;
+                    
+                    const walletIcons = {
+                        'NITJ_MAIN': '🏛️',
+                        'NITJ_HOSTELS': '🏠',
+                        'NITJ_ACADEMIC': '🎓',
+                        'NITJ_SPORTS': '⚽',
+                        'NITJ_WORKSHOP': '⚙️',
+                        'NITJ_LIBRARY': '📚',
+                        'NITJ_ADMIN': '📋',
+                        'PSPCL_GRID': '⚡',
+                        'RBI_ESCROW': '🏦'
+                    };
+                    
+                    container.innerHTML = Object.entries(wallets)
+                        .filter(([id]) => id !== 'RBI_ESCROW')
+                        .map(([id, info]) => `
+                            <div class="wallet-item">
+                                <div class="wallet-info">
+                                    <div class="wallet-avatar">${walletIcons[id] || '💰'}</div>
+                                    <div>
+                                        <div class="wallet-name">${info.name || id}</div>
+                                        <div class="wallet-id">${id}</div>
+                                    </div>
+                                </div>
+                                <div class="wallet-balance">₹${info.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                            </div>
+                        `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load wallets:', error);
+            }
+        }
 
-        // Auto-refresh every 5 seconds
-        refreshInterval = setInterval(loadDashboard, 5000);
+        // Update tariff highlight based on current time
+        function updateTariffHighlight() {
+            const hour = new Date().getHours();
+            
+            document.querySelectorAll('.tariff-item').forEach(el => el.classList.remove('active'));
+            
+            if (hour >= 18 && hour < 22) {
+                document.getElementById('tariffPeak').classList.add('active');
+            } else if (hour >= 22 || hour < 6) {
+                document.getElementById('tariffOffPeak').classList.add('active');
+            } else {
+                document.getElementById('tariffNormal').classList.add('active');
+            }
+        }
 
-        // Refresh on visibility change
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) loadDashboard();
+        // Handle form submission
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = {
+                    meterId: document.getElementById('meterId').value,
+                    kWh: parseFloat(document.getElementById('kWh').value),
+                    carbonTag: document.getElementById('carbonTag').value,
+                    payerWallet: document.getElementById('payerWallet').value,
+                    payeeWallet: 'PSPCL_GRID'
+                };
+                
+                const response = await fetch(`${API_URL}/transaction/complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('success', `Transaction successful! Receipt #${data.data.receipt.receiptId} | ₹${data.data.pricing.total.toFixed(2)}`);
+                    addTransaction(data.data);
+                    loadStatistics();
+                    refreshWallets();
+                    
+                    // Reset form
+                    document.getElementById('kWh').value = '';
+                } else {
+                    showToast('error', data.error || 'Transaction failed');
+                }
+            } catch (error) {
+                showToast('error', 'Server error: ' + error.message);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
         });
+
+        // Add transaction to list
+        function addTransaction(data) {
+            transactions.unshift(data);
+            renderTransactions();
+        }
+
+        // Render transactions
+        function renderTransactions() {
+            const container = document.getElementById('transactionsContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (transactions.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            container.innerHTML = transactions.slice(0, 20).map(tx => `
+                <div class="transaction-item">
+                    <div class="tx-icon settlement">💰</div>
+                    <div class="tx-details">
+                        <h4>${tx.summary.meterId} - ${tx.summary.carbonTag}</h4>
+                        <p>Receipt #${tx.receipt.receiptId} → Token #${tx.token.tokenId} → Settlement #${tx.settlement.settlementId}</p>
+                    </div>
+                    <div class="tx-amount">
+                        <div class="value">₹${tx.pricing.total.toFixed(2)}</div>
+                        <div class="label">${tx.summary.kWh.toFixed(3)} kWh</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show toast notification
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✅' : '❌'}</span>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Update tariff highlight every minute
+        setInterval(updateTariffHighlight, 60000);
     </script>
 </body>
 </html>

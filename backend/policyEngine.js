@@ -1,340 +1,378 @@
 /**
- * ============================================
- * POLICY ENGINE - NIT JALANDHAR
- * ============================================
- * Calculates energy pricing based on:
- * - Punjab PSPCL (Punjab State Power Corporation Limited) rates
- * - Time of Use (ToU) rates for industrial/institutional consumers
- * - Green energy incentives (Solar rooftop)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * NIT JALANDHAR - CAMPUS ENERGY TRADE SYSTEM
+ * Policy Engine - PSPCL Punjab Tariff Calculator
+ * ═══════════════════════════════════════════════════════════════════════════════
  * 
- * Reference: PSPCL Tariff Order 2024-25
- * Category: Large Supply (LS) - Educational Institutions
+ * @author NIT Jalandhar Energy Team
+ * @version 2.0.0
+ * @license MIT
  * 
- * Pricing Formula:
- * Price = BaseRate × kWh × TimeMultiplier × (1 - GreenDiscount) + Surcharges
+ * @description
+ * Implements Punjab State Power Corporation Ltd (PSPCL) tariff structure
+ * for institutional/commercial consumers as per latest tariff order.
  */
 
-// ============ PSPCL TARIFF CONFIGURATION ============
-// Based on Punjab State Electricity Regulatory Commission (PSERC) tariff
+'use strict';
 
-const CONFIG = {
-    // PSPCL Large Supply (LS) rate for educational institutions
-    // Effective from April 2024 - ₹6.79/kWh for LS category
-    BASE_RATE_PER_KWH: parseInt(process.env.BASE_RATE_PER_KWH) || 679, // ₹6.79/kWh
+const { Logger } = require('./utils');
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TARIFF CONFIGURATION - PSPCL PUNJAB 2024
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const TARIFF_CONFIG = {
+    // Base rates (INR per kWh)
+    BASE_RATE: 6.79,
     
-    // Time-of-Use (ToU) multipliers as per PSPCL norms
-    TIME_OF_USE: {
-        // Peak hours in Punjab: 6 PM - 10 PM (summer) / 5 PM - 9 PM (winter)
-        // Using summer schedule for Jalandhar
-        PEAK: {
-            startHour: parseInt(process.env.PEAK_HOUR_START) || 18,  // 6 PM
-            endHour: parseInt(process.env.PEAK_HOUR_END) || 22,      // 10 PM
-            multiplier: parseFloat(process.env.PEAK_MULTIPLIER) || 1.20, // 20% surcharge
-            description: 'PSPCL Peak Hours (6 PM - 10 PM)'
-        },
-        // Off-peak hours
-        OFF_PEAK: {
-            multiplier: 1.0,
-            description: 'Normal Hours'
-        },
-        // Night off-peak (discount period)
-        NIGHT: {
-            startHour: 22,
-            endHour: 6,
-            multiplier: 0.90, // 10% discount for night usage
-            description: 'Night Rebate Hours (10 PM - 6 AM)'
-        }
+    // Time-of-use multipliers
+    PEAK_MULTIPLIER: 1.20,      // 6 PM - 10 PM (Evening Peak)
+    OFF_PEAK_MULTIPLIER: 0.90,  // 10 PM - 6 AM (Night)
+    NORMAL_MULTIPLIER: 1.00,    // 6 AM - 6 PM (Day)
+    
+    // Time periods (24-hour format)
+    PEAK_START: 18,    // 6 PM
+    PEAK_END: 22,      // 10 PM
+    OFF_PEAK_START: 22, // 10 PM
+    OFF_PEAK_END: 6,    // 6 AM
+    
+    // Additional charges
+    ELECTRICITY_DUTY: 0.05,     // 5% of energy charges
+    FUEL_SURCHARGE: 0.10,       // ₹0.10 per kWh
+    METER_RENT: 50,             // ₹50 per month (pro-rated)
+    
+    // Demand charges (for commercial/institutional)
+    DEMAND_CHARGE: 150,         // ₹150 per kVA per month
+    
+    // Carbon pricing (voluntary)
+    CARBON_CREDIT: {
+        NORMAL: 0,
+        GREEN: 0.50,            // ₹0.50 per kWh discount
+        RENEWABLE: 1.00,        // ₹1.00 per kWh discount
+        CERTIFIED: 1.50         // ₹1.50 per kWh discount
     },
     
-    // Green/Solar energy incentives
-    // Government of India/Punjab promotes rooftop solar with net metering
-    CARBON_DISCOUNT: {
-        GREEN: parseFloat(process.env.GREEN_DISCOUNT) || 0.15, // 15% incentive for solar
-        NORMAL: 0.0
-    },
+    // Tax rates
+    GST_RATE: 0.18,             // 18% GST on services
     
-    // Additional PSPCL surcharges
-    SURCHARGES: {
-        FUEL_ADJUSTMENT: 0.05,    // 5% fuel surcharge
-        ELECTRICITY_DUTY: 0.05,   // 5% Punjab Electricity Duty
-        PENSION_TRUST: 0.02       // 2% pension trust surcharge
-    },
-    
-    // Feed-in Tariff for solar producers (per kWh exported)
-    SOLAR_FEED_IN_RATE: 400, // ₹4.00/kWh for solar export to grid
-    
-    // NIT Jalandhar specific
-    INSTITUTION: {
-        name: 'National Institute of Technology Jalandhar',
-        consumerId: 'PSPCL/JLD/LS/1234567',  // Sample consumer ID
-        category: 'Large Supply (LS) - Educational',
-        sanctionedLoad: '2500 kVA',
-        connectionDate: '1987-01-01'
-    }
+    // Rounding precision
+    PRECISION: 2
 };
 
-// ============ POLICY ENGINE CLASS ============
+// ═══════════════════════════════════════════════════════════════════════════════
+// POLICY ENGINE CLASS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 class PolicyEngine {
     constructor() {
-        this.config = CONFIG;
-        console.log('📋 Policy Engine initialized - PSPCL Punjab Rates');
-        console.log(`   Institution: ${this.config.INSTITUTION.name}`);
-        console.log(`   Base Rate: ₹${(this.config.BASE_RATE_PER_KWH / 100).toFixed(2)}/kWh (PSPCL LS Category)`);
-        console.log(`   Peak Hours: ${this.config.TIME_OF_USE.PEAK.startHour}:00 - ${this.config.TIME_OF_USE.PEAK.endHour}:00 (+${(this.config.TIME_OF_USE.PEAK.multiplier - 1) * 100}%)`);
-        console.log(`   Night Rebate: ${this.config.TIME_OF_USE.NIGHT.startHour}:00 - ${this.config.TIME_OF_USE.NIGHT.endHour}:00 (-${(1 - this.config.TIME_OF_USE.NIGHT.multiplier) * 100}%)`);
-        console.log(`   Solar Incentive: ${this.config.CARBON_DISCOUNT.GREEN * 100}%`);
+        this.logger = new Logger('PolicyEngine');
+        this.tariff = TARIFF_CONFIG;
     }
-    
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // CORE PRICING CALCULATIONS
+    // ─────────────────────────────────────────────────────────────────────────
+
     /**
-     * Determine time-of-use category based on PSPCL Punjab tariff
+     * Calculate complete price for energy consumption
+     * @param {number} kWh - Energy consumed in kilowatt-hours
      * @param {number} timestamp - Unix timestamp in milliseconds
-     * @returns {Object} { category: string, multiplier: number, description: string }
-     */
-    getTimeOfUse(timestamp) {
-        const date = new Date(timestamp);
-        const hour = date.getHours();
-        
-        const peak = this.config.TIME_OF_USE.PEAK;
-        const night = this.config.TIME_OF_USE.NIGHT;
-        
-        // Check for peak hours (6 PM - 10 PM)
-        if (hour >= peak.startHour && hour < peak.endHour) {
-            return {
-                category: 'PEAK',
-                multiplier: peak.multiplier,
-                hours: `${peak.startHour}:00 - ${peak.endHour}:00`,
-                description: peak.description
-            };
-        }
-        
-        // Check for night rebate hours (10 PM - 6 AM)
-        if (hour >= night.startHour || hour < night.endHour) {
-            return {
-                category: 'NIGHT',
-                multiplier: night.multiplier,
-                hours: `${night.startHour}:00 - ${night.endHour}:00`,
-                description: night.description
-            };
-        }
-        
-        // Normal hours
-        return {
-            category: 'NORMAL',
-            multiplier: this.config.TIME_OF_USE.OFF_PEAK.multiplier,
-            hours: '6:00 - 18:00',
-            description: 'Normal Hours (Day)'
-        };
-    }
-    
-    /**
-     * Get carbon discount (solar incentive)
-     * @param {string} carbonTag - GREEN or NORMAL
-     * @returns {Object} { discount: number, description: string }
-     */
-    getCarbonDiscount(carbonTag) {
-        const discount = this.config.CARBON_DISCOUNT[carbonTag] || 0;
-        
-        return {
-            discount: discount,
-            percentage: `${discount * 100}%`,
-            description: carbonTag === 'GREEN' 
-                ? 'Renewable energy discount applied' 
-                : 'Standard grid energy (no discount)'
-        };
-    }
-    
-    /**
-     * Calculate energy price
-     * @param {number} kWh - Energy amount in kWh
-     * @param {number} timestamp - Unix timestamp in milliseconds
-     * @param {string} carbonTag - GREEN or NORMAL
+     * @param {string} carbonTag - Carbon source tag
      * @returns {Object} Detailed pricing breakdown
      */
-    calculatePrice(kWh, timestamp, carbonTag) {
-        // Get time-of-use info
-        const timeOfUse = this.getTimeOfUse(timestamp);
+    calculatePrice(kWh, timestamp = Date.now(), carbonTag = 'NORMAL') {
+        if (kWh <= 0) {
+            throw new Error('Energy consumption must be positive');
+        }
+
+        const date = new Date(timestamp);
+        const hour = date.getHours();
+        const period = this.getTimePeriod(hour);
+        const multiplier = this.getMultiplier(period);
         
-        // Get carbon discount
-        const carbonInfo = this.getCarbonDiscount(carbonTag);
+        // Base energy charge
+        const baseRate = this.tariff.BASE_RATE;
+        const effectiveRate = baseRate * multiplier;
+        const energyCharge = kWh * effectiveRate;
         
-        // Calculate price components
-        const baseAmount = this.config.BASE_RATE_PER_KWH * kWh;
-        const timeAdjustedAmount = baseAmount * timeOfUse.multiplier;
-        const discountAmount = timeAdjustedAmount * carbonInfo.discount;
-        const finalAmount = Math.round(timeAdjustedAmount - discountAmount);
+        // Fuel surcharge
+        const fuelSurcharge = kWh * this.tariff.FUEL_SURCHARGE;
+        
+        // Electricity duty
+        const electricityDuty = energyCharge * this.tariff.ELECTRICITY_DUTY;
+        
+        // Carbon credit/discount
+        const carbonDiscount = kWh * (this.tariff.CARBON_CREDIT[carbonTag.toUpperCase()] || 0);
+        
+        // Subtotal before taxes
+        const subtotal = energyCharge + fuelSurcharge + electricityDuty - carbonDiscount;
+        
+        // Total (no GST on electricity for end consumers in most states)
+        const total = Math.max(0, subtotal);
         
         return {
             // Input parameters
-            input: {
-                kWh: kWh,
-                timestamp: timestamp,
-                timestampISO: new Date(timestamp).toISOString(),
-                carbonTag: carbonTag
+            kWh: this.round(kWh),
+            timestamp,
+            dateTime: date.toISOString(),
+            carbonTag: carbonTag.toUpperCase(),
+            
+            // Time period info
+            period,
+            hour,
+            multiplier,
+            
+            // Rates
+            baseRate,
+            effectiveRate: this.round(effectiveRate),
+            
+            // Charges breakdown
+            charges: {
+                energy: this.round(energyCharge),
+                fuelSurcharge: this.round(fuelSurcharge),
+                electricityDuty: this.round(electricityDuty),
+                carbonDiscount: this.round(carbonDiscount)
             },
             
-            // Pricing breakdown
-            breakdown: {
-                baseRatePerKWh: this.config.BASE_RATE_PER_KWH,
-                baseRateINR: `₹${(this.config.BASE_RATE_PER_KWH / 100).toFixed(2)}`,
-                baseAmount: baseAmount,
-                baseAmountINR: `₹${(baseAmount / 100).toFixed(2)}`,
-                
-                timeOfUse: {
-                    category: timeOfUse.category,
-                    multiplier: timeOfUse.multiplier,
-                    hours: timeOfUse.hours
-                },
-                timeAdjustedAmount: timeAdjustedAmount,
-                timeAdjustedINR: `₹${(timeAdjustedAmount / 100).toFixed(2)}`,
-                
-                carbonDiscount: {
-                    tag: carbonTag,
-                    discount: carbonInfo.discount,
-                    percentage: carbonInfo.percentage,
-                    description: carbonInfo.description
-                },
-                discountAmount: discountAmount,
-                discountAmountINR: `₹${(discountAmount / 100).toFixed(2)}`
-            },
+            // Totals
+            subtotal: this.round(subtotal),
+            total: this.round(total),
             
-            // Final amount
-            finalAmount: finalAmount,
-            finalAmountINR: `₹${(finalAmount / 100).toFixed(2)}`,
+            // Rate summary
+            avgRatePerKwh: this.round(total / kWh),
             
-            // Formula used
-            formula: `(BaseRate × kWh × TimeMultiplier) - Discount`,
-            calculation: `(${this.config.BASE_RATE_PER_KWH} × ${kWh} × ${timeOfUse.multiplier}) - ${discountAmount.toFixed(0)} = ${finalAmount}`
+            // Metadata
+            tariffVersion: 'PSPCL-2024-v2',
+            calculatedAt: new Date().toISOString()
         };
     }
-    
+
     /**
-     * Validate meter data
-     * @param {Object} meterData - Raw meter data
-     * @returns {Object} { valid: boolean, errors: string[] }
+     * Get time period for given hour
      */
-    validateMeterData(meterData) {
-        const errors = [];
-        
-        // Required fields
-        if (!meterData.meterId) {
-            errors.push('Missing meterId');
+    getTimePeriod(hour) {
+        if (hour >= this.tariff.PEAK_START && hour < this.tariff.PEAK_END) {
+            return 'PEAK';
+        } else if (hour >= this.tariff.OFF_PEAK_START || hour < this.tariff.OFF_PEAK_END) {
+            return 'OFF_PEAK';
+        } else {
+            return 'NORMAL';
         }
-        
-        if (meterData.kWh === undefined || meterData.kWh === null) {
-            errors.push('Missing kWh value');
-        } else if (typeof meterData.kWh !== 'number' || meterData.kWh < 0) {
-            errors.push('Invalid kWh value (must be non-negative number)');
-        }
-        
-        if (!meterData.timestamp) {
-            errors.push('Missing timestamp');
-        } else if (meterData.timestamp > Date.now() + 60000) { // Allow 1 minute drift
-            errors.push('Future timestamp not allowed');
-        }
-        
-        if (!meterData.carbonTag) {
-            errors.push('Missing carbonTag');
-        } else if (!['GREEN', 'NORMAL'].includes(meterData.carbonTag)) {
-            errors.push('Invalid carbonTag (must be GREEN or NORMAL)');
-        }
-        
-        if (!meterData.dataHash) {
-            errors.push('Missing dataHash for blockchain');
-        }
-        
-        return {
-            valid: errors.length === 0,
-            errors: errors
-        };
     }
-    
+
     /**
-     * Get current policy configuration
+     * Get multiplier for time period
      */
-    getConfig() {
+    getMultiplier(period) {
+        switch (period) {
+            case 'PEAK':
+                return this.tariff.PEAK_MULTIPLIER;
+            case 'OFF_PEAK':
+                return this.tariff.OFF_PEAK_MULTIPLIER;
+            default:
+                return this.tariff.NORMAL_MULTIPLIER;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // BATCH CALCULATIONS
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Calculate prices for multiple readings
+     */
+    calculateBatch(readings) {
+        const results = readings.map(r => this.calculatePrice(r.kWh, r.timestamp, r.carbonTag));
+        
+        const totals = results.reduce((acc, r) => ({
+            kWh: acc.kWh + r.kWh,
+            total: acc.total + r.total
+        }), { kWh: 0, total: 0 });
+        
         return {
-            baseRatePerKWh: this.config.BASE_RATE_PER_KWH,
-            baseRateINR: `₹${(this.config.BASE_RATE_PER_KWH / 100).toFixed(2)}`,
-            peakHours: {
-                start: this.config.TIME_OF_USE.PEAK.startHour,
-                end: this.config.TIME_OF_USE.PEAK.endHour,
-                multiplier: this.config.TIME_OF_USE.PEAK.multiplier
-            },
-            carbonDiscounts: {
-                GREEN: `${this.config.CARBON_DISCOUNT.GREEN * 100}%`,
-                NORMAL: `${this.config.CARBON_DISCOUNT.NORMAL * 100}%`
+            readings: results,
+            summary: {
+                count: results.length,
+                totalKwh: this.round(totals.kWh),
+                totalAmount: this.round(totals.total),
+                avgRatePerKwh: this.round(totals.total / totals.kWh)
             }
         };
     }
-}
 
-// ============ TEST EXAMPLES ============
-
-function runPolicyTests() {
-    console.log('\n' + '='.repeat(60));
-    console.log('       POLICY ENGINE - TEST EXAMPLES');
-    console.log('='.repeat(60) + '\n');
-    
-    const engine = new PolicyEngine();
-    
-    // Test scenarios
-    const scenarios = [
-        { 
-            name: 'Off-peak GREEN energy',
-            kWh: 10,
-            timestamp: new Date().setHours(10, 0, 0, 0), // 10 AM
-            carbonTag: 'GREEN'
-        },
-        { 
-            name: 'Peak NORMAL energy',
-            kWh: 10,
-            timestamp: new Date().setHours(19, 0, 0, 0), // 7 PM (peak)
-            carbonTag: 'NORMAL'
-        },
-        { 
-            name: 'Peak GREEN energy',
-            kWh: 10,
-            timestamp: new Date().setHours(20, 0, 0, 0), // 8 PM (peak)
-            carbonTag: 'GREEN'
-        },
-        { 
-            name: 'Off-peak NORMAL energy',
-            kWh: 10,
-            timestamp: new Date().setHours(14, 0, 0, 0), // 2 PM
-            carbonTag: 'NORMAL'
+    /**
+     * Estimate monthly bill
+     */
+    estimateMonthlyBill(avgDailyKwh, carbonTag = 'NORMAL') {
+        const daysInMonth = 30;
+        
+        // Distribute usage across time periods (typical pattern)
+        const distribution = {
+            PEAK: 0.25,      // 25% during peak hours
+            NORMAL: 0.55,   // 55% during normal hours
+            OFF_PEAK: 0.20  // 20% during off-peak
+        };
+        
+        let totalCharge = 0;
+        const breakdown = {};
+        
+        for (const [period, ratio] of Object.entries(distribution)) {
+            const periodKwh = avgDailyKwh * daysInMonth * ratio;
+            const multiplier = this.getMultiplier(period);
+            const charge = periodKwh * this.tariff.BASE_RATE * multiplier;
+            
+            breakdown[period] = {
+                kWh: this.round(periodKwh),
+                charge: this.round(charge)
+            };
+            
+            totalCharge += charge;
         }
-    ];
-    
-    for (const scenario of scenarios) {
-        console.log(`\n📊 Scenario: ${scenario.name}`);
-        console.log('-'.repeat(50));
         
-        const result = engine.calculatePrice(
-            scenario.kWh,
-            scenario.timestamp,
-            scenario.carbonTag
-        );
+        // Add fixed and variable charges
+        const fuelSurcharge = avgDailyKwh * daysInMonth * this.tariff.FUEL_SURCHARGE;
+        const electricityDuty = totalCharge * this.tariff.ELECTRICITY_DUTY;
+        const meterRent = this.tariff.METER_RENT;
+        const carbonDiscount = avgDailyKwh * daysInMonth * (this.tariff.CARBON_CREDIT[carbonTag] || 0);
         
-        console.log(`   kWh: ${result.input.kWh}`);
-        console.log(`   Time: ${new Date(result.input.timestamp).toLocaleTimeString()}`);
-        console.log(`   Carbon Tag: ${result.input.carbonTag}`);
-        console.log(`   Time Category: ${result.breakdown.timeOfUse.category} (${result.breakdown.timeOfUse.multiplier}x)`);
-        console.log(`   Base Amount: ${result.breakdown.baseAmountINR}`);
-        console.log(`   After Time Adjustment: ${result.breakdown.timeAdjustedINR}`);
-        console.log(`   Discount: -${result.breakdown.discountAmountINR}`);
-        console.log(`   ━━━━━━━━━━━━━━━━━━━━━━━━`);
-        console.log(`   FINAL AMOUNT: ${result.finalAmountINR}`);
+        const grandTotal = totalCharge + fuelSurcharge + electricityDuty + meterRent - carbonDiscount;
+        
+        return {
+            avgDailyKwh,
+            totalMonthlyKwh: this.round(avgDailyKwh * daysInMonth),
+            breakdown,
+            charges: {
+                energyCharges: this.round(totalCharge),
+                fuelSurcharge: this.round(fuelSurcharge),
+                electricityDuty: this.round(electricityDuty),
+                meterRent: meterRent,
+                carbonDiscount: this.round(carbonDiscount)
+            },
+            total: this.round(grandTotal),
+            carbonTag
+        };
     }
-    
-    console.log('\n' + '='.repeat(60) + '\n');
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // TARIFF INFORMATION
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Get current tariff information
+     */
+    getTariffInfo() {
+        return {
+            provider: 'Punjab State Power Corporation Ltd (PSPCL)',
+            category: 'Industrial/Institutional Supply',
+            region: 'Punjab, India',
+            version: 'PSPCL-2024-v2',
+            effectiveDate: '2024-04-01',
+            
+            rates: {
+                baseRate: {
+                    value: this.tariff.BASE_RATE,
+                    unit: 'INR/kWh',
+                    description: 'Base energy charge'
+                },
+                fuelSurcharge: {
+                    value: this.tariff.FUEL_SURCHARGE,
+                    unit: 'INR/kWh',
+                    description: 'Fuel and power purchase cost adjustment'
+                },
+                electricityDuty: {
+                    value: this.tariff.ELECTRICITY_DUTY * 100,
+                    unit: '%',
+                    description: 'State electricity duty'
+                }
+            },
+            
+            timeOfUse: {
+                peak: {
+                    hours: `${this.tariff.PEAK_START}:00 - ${this.tariff.PEAK_END}:00`,
+                    multiplier: this.tariff.PEAK_MULTIPLIER,
+                    effectiveRate: this.round(this.tariff.BASE_RATE * this.tariff.PEAK_MULTIPLIER)
+                },
+                normal: {
+                    hours: `${this.tariff.OFF_PEAK_END}:00 - ${this.tariff.PEAK_START}:00`,
+                    multiplier: this.tariff.NORMAL_MULTIPLIER,
+                    effectiveRate: this.round(this.tariff.BASE_RATE * this.tariff.NORMAL_MULTIPLIER)
+                },
+                offPeak: {
+                    hours: `${this.tariff.OFF_PEAK_START}:00 - ${this.tariff.OFF_PEAK_END}:00`,
+                    multiplier: this.tariff.OFF_PEAK_MULTIPLIER,
+                    effectiveRate: this.round(this.tariff.BASE_RATE * this.tariff.OFF_PEAK_MULTIPLIER)
+                }
+            },
+            
+            carbonCredits: this.tariff.CARBON_CREDIT,
+            
+            note: 'Rates as per PSERC tariff order for FY 2024-25'
+        };
+    }
+
+    /**
+     * Get current time period information
+     */
+    getCurrentPeriodInfo() {
+        const now = new Date();
+        const hour = now.getHours();
+        const period = this.getTimePeriod(hour);
+        const multiplier = this.getMultiplier(period);
+        
+        return {
+            currentTime: now.toISOString(),
+            hour,
+            period,
+            multiplier,
+            effectiveRate: this.round(this.tariff.BASE_RATE * multiplier),
+            nextPeriodChange: this.getNextPeriodChange(hour)
+        };
+    }
+
+    /**
+     * Calculate when next period change occurs
+     */
+    getNextPeriodChange(currentHour) {
+        if (currentHour < 6) {
+            return { hour: 6, period: 'NORMAL' };
+        } else if (currentHour < 18) {
+            return { hour: 18, period: 'PEAK' };
+        } else if (currentHour < 22) {
+            return { hour: 22, period: 'OFF_PEAK' };
+        } else {
+            return { hour: 6, period: 'NORMAL', nextDay: true };
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // UTILITY METHODS
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Round to configured precision
+     */
+    round(value) {
+        return Math.round(value * Math.pow(10, this.tariff.PRECISION)) / 
+               Math.pow(10, this.tariff.PRECISION);
+    }
+
+    /**
+     * Format currency
+     */
+    formatCurrency(value) {
+        return `₹${this.round(value).toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+    }
+
+    /**
+     * Update tariff configuration
+     */
+    updateTariff(updates) {
+        Object.assign(this.tariff, updates);
+        this.logger.info('Tariff configuration updated');
+    }
 }
 
-// ============ EXPORTS ============
-
-module.exports = new PolicyEngine();
-
-// Run tests if executed directly
-if (require.main === module) {
-    runPolicyTests();
-}
+module.exports = PolicyEngine;
