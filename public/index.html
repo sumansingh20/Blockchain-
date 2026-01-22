@@ -569,15 +569,24 @@
                 const res = await fetch(`${API_BASE}/wallets`);
                 const data = await res.json();
                 if (data.success) {
-                    document.getElementById('walletsGrid').innerHTML = data.data.map(w => `
+                    const typeIcons = {
+                        'e₹-R Producer': { icon: 'fa-solar-panel', color: 'text-warning' },
+                        'e₹-R Consumer': { icon: 'fa-user', color: 'text-primary' },
+                        'e₹-W Wholesale': { icon: 'fa-university', color: 'text-success' },
+                        'e₹-W Utility': { icon: 'fa-plug', color: 'text-secondary' },
+                        'e₹ Escrow': { icon: 'fa-lock', color: 'text-danger' }
+                    };
+                    document.getElementById('walletsGrid').innerHTML = data.data.map(w => {
+                        const ti = typeIcons[w.type] || { icon: 'fa-wallet', color: 'text-primary' };
+                        return `
                         <div class="col-md-4 col-lg-3">
                             <div class="wallet-card">
-                                <p class="wallet-name mb-1"><i class="fas fa-building me-1 text-primary"></i>${w.name}</p>
+                                <p class="wallet-name mb-1"><i class="fas ${ti.icon} me-1 ${ti.color}"></i>${w.name}</p>
                                 <p class="wallet-balance mb-0">₹${w.balance.toLocaleString()}</p>
                                 <p class="wallet-type mb-0">${w.type}</p>
                             </div>
-                        </div>
-                    `).join('');
+                        </div>`;
+                    }).join('');
                 }
             } catch (e) { console.error('Wallets error:', e); }
         }

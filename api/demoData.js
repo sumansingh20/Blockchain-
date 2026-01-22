@@ -20,16 +20,25 @@ const DEMO_DATA = {
         settlementValue: 2681.43
     },
     
+    // CBDC Wallets per Problem Statement Section 2 (Target Users & Roles)
     wallets: {
-        NITJ_MAIN: { name: "NIT Jalandhar Main Account", balance: 4999796.12 },
-        NITJ_HOSTELS: { name: "Hostels Account", balance: 999018.23 },
-        NITJ_ACADEMIC: { name: "Academic Buildings", balance: 1499215.60 },
-        NITJ_SPORTS: { name: "Sports Complex", balance: 499793.96 },
-        NITJ_WORKSHOP: { name: "Central Workshop", balance: 799670.33 },
-        NITJ_LIBRARY: { name: "Central Library", balance: 299898.07 },
-        NITJ_ADMIN: { name: "Administrative Block", balance: 699926.26 },
-        PSPCL_GRID: { name: "PSPCL Punjab Grid", balance: 2681.43 },
-        RBI_ESCROW: { name: "RBI CBDC Escrow", balance: 10000000.00 }
+        // Producers - Campus solar, lab micro-gen
+        NITJ_SOLAR: { name: "Campus Solar Rooftop", balance: 50000.00, type: "e₹-R Producer" },
+        NITJ_MICRO_GEN: { name: "Lab Micro-Gen Unit", balance: 25000.00, type: "e₹-R Producer" },
+        
+        // Consumers - Hostels, departments, EV chargers, research labs
+        NITJ_HOSTELS: { name: "Hostels (Consumer)", balance: 999018.23, type: "e₹-R Consumer" },
+        NITJ_ACADEMIC: { name: "Academic Depts", balance: 1499215.60, type: "e₹-R Consumer" },
+        NITJ_EV_CHARGER: { name: "EV Charging Station", balance: 150000.00, type: "e₹-R Consumer" },
+        NITJ_RESEARCH: { name: "Research Labs", balance: 350000.00, type: "e₹-R Consumer" },
+        
+        // Treasury/Finance - University + partnered bank
+        NITJ_TREASURY: { name: "University Treasury", balance: 4999796.12, type: "e₹-W Wholesale" },
+        PARTNER_BANK: { name: "Partner Bank (SBI)", balance: 10000000.00, type: "e₹-W Wholesale" },
+        
+        // Utilities/Grid
+        PSPCL_GRID: { name: "PSPCL Punjab Grid", balance: 2681.43, type: "e₹-W Utility" },
+        RBI_ESCROW: { name: "RBI CBDC Escrow", balance: 50000000.00, type: "e₹ Escrow" }
     },
     
     transactions: [
