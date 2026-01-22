@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "public": true,
   "rewrites": [
     { "source": "/", "destination": "/frontend/dashboard.html" },
     { "source": "/api/health", "destination": "/api/health.js" },
@@ -10,5 +11,16 @@
     { "source": "/api/transactions", "destination": "/api/transactions.js" },
     { "source": "/api/metrics", "destination": "/api/metrics.js" },
     { "source": "/api/transaction/complete", "destination": "/api/transactions.js" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    }
   ]
 }
