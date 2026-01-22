@@ -154,7 +154,7 @@ contract EnergyLedger is Ownable, ReentrancyGuard, Pausable {
     ) external onlyAuthorized whenNotPaused nonReentrant returns (uint256) {
         require(bytes(meterId).length > 0, "EnergyLedger: empty meterId");
         require(kWhScaled >= MIN_KWH_SCALED && kWhScaled <= MAX_KWH_SCALED, "EnergyLedger: kWh out of range");
-        require(timestamp > 0 && timestamp <= block.timestamp + 1 hours, "EnergyLedger: invalid timestamp");
+        require(timestamp > 0, "EnergyLedger: invalid timestamp");
         require(carbonTag <= uint8(CarbonTag.CERTIFIED), "EnergyLedger: invalid carbonTag");
         require(dataHash != bytes32(0), "EnergyLedger: empty dataHash");
         require(_dataHashToReceipt[dataHash] == 0, "EnergyLedger: duplicate data");
