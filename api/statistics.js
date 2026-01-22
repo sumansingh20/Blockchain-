@@ -8,14 +8,22 @@ module.exports = (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
     
+    // Calculate energy by source
+    const energyBySource = { SOLAR: 0, GRID: 0, HYBRID: 0 };
+    DEMO_DATA.transactions.forEach(tx => {
+        if (energyBySource[tx.carbonTag] !== undefined) {
+            energyBySource[tx.carbonTag] += tx.kWh;
+        }
+    });
+    
     res.status(200).json({
         success: true,
         data: {
-            blockchain: DEMO_DATA.statistics,
-            cbdc: {
-                totalTransactions: DEMO_DATA.statistics.settlements,
-                totalVolume: DEMO_DATA.statistics.settlementValue
-            },
+            totalEnergy: DEMO_DATA.statistics.totalEnergy,
+            totalSettled: DEMO_DATA.statistics.settlementValue.toFixed(2),
+            totalTransactions: DEMO_DATA.statistics.receipts,
+            greenEnergy: DEMO_DATA.statistics.greenEnergy,
+            energyBySource: energyBySource,
             generated: new Date().toISOString()
         }
     });
