@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | NIT Jalandhar Energy Trading</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --nitj-primary: #1a237e;
+            --nitj-secondary: #283593;
+            --nitj-accent: #3949ab;
+            --cbdc-gold: #c9a227;
+            --solar: #f59e0b;
+            --grid: #6b7280;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--nitj-primary) 0%, var(--nitj-secondary) 100%);
+            min-height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 1rem;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.75rem 1.25rem;
+            margin: 0.25rem 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            width: 24px;
+            margin-right: 0.5rem;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--nitj-primary);
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .table-container th {
+            background: var(--nitj-primary);
+            color: white;
+            font-weight: 500;
+            padding: 1rem;
+        }
+        
+        .table-container td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        
+        .badge-solar { background: var(--solar); }
+        .badge-grid { background: var(--grid); }
+        .badge-hybrid { background: #10b981; }
+        
+        .status-active { color: var(--success); }
+        .status-pending { color: var(--warning); }
+        .status-failed { color: var(--danger); }
+        
+        .refresh-btn {
+            background: var(--nitj-accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background: var(--nitj-primary);
+        }
+        
+        .logo-section {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .logo-text {
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .logo-subtext {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.75rem;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading { animation: pulse 1.5s infinite; }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-section">
+            <div class="logo-text">⚡ NIT Jalandhar</div>
+            <div class="logo-subtext">Campus Energy Trading</div>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#trades">
+                    <i class="fas fa-exchange-alt"></i> Trades
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#meters">
+                    <i class="fas fa-bolt"></i> Meters
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#wallets">
+                    <i class="fas fa-wallet"></i> CBDC Wallets
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#carbon">
+                    <i class="fas fa-leaf"></i> Carbon Credits
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#blockchain">
+                    <i class="fas fa-cubes"></i> Blockchain
+                </a>
+            </li>
+            <li class="nav-item mt-3">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="mb-1">Energy Trading Dashboard</h4>
+                <p class="text-muted mb-0" id="lastUpdate">Last updated: --</p>
+            </div>
+            <button class="refresh-btn" onclick="refreshAll()">
+                <i class="fas fa-sync-alt me-2"></i> Refresh
+            </button>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-value" id="totalTrades">0</div>
+                            <div class="stat-label">Total Trades</div>
+                        </div>
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-value" id="totalEnergy">0 kWh</div>
+                            <div class="stat-label">Energy Traded</div>
+                        </div>
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-value" id="totalSettled">₹0</div>
+                            <div class="stat-label">CBDC Settled</div>
+                        </div>
+                        <div class="stat-icon" style="background: rgba(201, 162, 39, 0.1); color: #c9a227;">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-value" id="carbonAvoided">0 kg</div>
+                            <div class="stat-label">CO₂ Avoided</div>
+                        </div>
+                        <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-8">
+                <div class="chart-container">
+                    <h6 class="mb-3">Energy Trading Activity</h6>
+                    <canvas id="tradingChart" height="100"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-container">
+                    <h6 class="mb-3">Energy Sources</h6>
+                    <canvas id="sourceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Trades Table -->
+        <div class="table-container">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Trade ID</th>
+                        <th>Producer</th>
+                        <th>Consumer</th>
+                        <th>Energy</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="tradesTable">
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Loading trades...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let tradingChart, sourceChart;
+        
+        // Initialize charts
+        function initCharts() {
+            const tradingCtx = document.getElementById('tradingChart').getContext('2d');
+            tradingChart = new Chart(tradingCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Energy (kWh)',
+                        data: [],
+                        borderColor: '#1a237e',
+                        backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            const sourceCtx = document.getElementById('sourceChart').getContext('2d');
+            sourceChart = new Chart(sourceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Solar', 'Grid', 'Hybrid'],
+                    datasets: [{
+                        data: [60, 30, 10],
+                        backgroundColor: ['#f59e0b', '#6b7280', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // Fetch statistics
+        async function fetchStats() {
+            try {
+                const response = await fetch('/api/statistics');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    document.getElementById('totalTrades').textContent = stats.policy.trades.total;
+                    document.getElementById('totalEnergy').textContent = `${stats.policy.trades.totalKwh.toFixed(2)} kWh`;
+                    document.getElementById('totalSettled').textContent = `₹${stats.policy.trades.totalSettled.toFixed(2)}`;
+                    document.getElementById('carbonAvoided').textContent = `${stats.policy.carbon.totalAvoidedKg.toFixed(2)} kg`;
+                    
+                    // Update source chart
+                    const sources = stats.meters.byType;
+                    const sourceData = [];
+                    const sourceLabels = [];
+                    for (const [type, info] of Object.entries(sources)) {
+                        sourceLabels.push(type);
+                        sourceData.push(info.kWh || 0);
+                    }
+                    if (sourceData.length > 0) {
+                        sourceChart.data.labels = sourceLabels;
+                        sourceChart.data.datasets[0].data = sourceData;
+                        sourceChart.update();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch stats:', error);
+            }
+        }
+
+        // Fetch trades
+        async function fetchTrades() {
+            try {
+                const response = await fetch('/api/trades?limit=10');
+                const data = await response.json();
+                
+                if (data.success && data.data.trades.length > 0) {
+                    const tbody = document.getElementById('tradesTable');
+                    tbody.innerHTML = data.data.trades.map(trade => `
+                        <tr>
+                            <td><code>${trade.tradeId.slice(0, 12)}...</code></td>
+                            <td>${trade.producer}</td>
+                            <td>${trade.consumer}</td>
+                            <td><strong>${(trade.pricePerKWh / 100).toFixed(2)} kWh</strong></td>
+                            <td><span class="badge badge-${trade.carbonTag.toLowerCase()}">${trade.carbonTag}</span></td>
+                            <td><span class="status-active"><i class="fas fa-check-circle"></i> Confirmed</span></td>
+                            <td>${new Date(trade.timestamp).toLocaleTimeString()}</td>
+                        </tr>
+                    `).join('');
+
+                    // Update trading chart
+                    const chartData = data.data.trades.slice().reverse().map(t => ({
+                        time: new Date(t.timestamp).toLocaleTimeString(),
+                        kwh: t.pricePerKWh / 100
+                    }));
+                    tradingChart.data.labels = chartData.map(d => d.time);
+                    tradingChart.data.datasets[0].data = chartData.map(d => d.kwh);
+                    tradingChart.update();
+                } else {
+                    document.getElementById('tradesTable').innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No trades yet. Submit a trade to get started.
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to fetch trades:', error);
+            }
+        }
+
+        // Refresh all data
+        async function refreshAll() {
+            document.getElementById('lastUpdate').textContent = 'Updating...';
+            await Promise.all([fetchStats(), fetchTrades()]);
+            document.getElementById('lastUpdate').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            refreshAll();
+            setInterval(refreshAll, 30000); // Auto-refresh every 30 seconds
+        });
+    </script>
+</body>
+</html>

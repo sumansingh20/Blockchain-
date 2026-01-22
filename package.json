@@ -2,7 +2,7 @@
   "name": "nitj-campus-energy-trade",
   "version": "2.0.0",
   "description": "Tokenized Campus Energy Trade with Blockchain Provenance and CBDC (e₹) Settlement - NIT Jalandhar",
-  "author": "NIT Jalandhar Energy Team",
+  "author": "NIT Jalandhar Energy Research Team",
   "license": "MIT",
   "keywords": [
     "blockchain",
@@ -11,48 +11,41 @@
     "smart-contracts",
     "cbdc",
     "nit-jalandhar",
-    "solidity",
-    "hardhat"
+    "is-15959",
+    "ed25519",
+    "carbon-tracking"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/sumansingh20/Blockchain-.git"
   },
-  "main": "backend/server.js",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "demo": "node src/demo.js",
     "compile": "hardhat compile",
     "node": "hardhat node",
     "deploy": "hardhat run scripts/deploy.js --network localhost",
-    "server": "node backend/server.js",
-    "server:dev": "nodemon backend/server.js",
-    "demo": "node scripts/demo.js",
-    "demo:full": "node scripts/comprehensiveDemo.js",
-    "simulate": "node meter/simulator.js --demo",
-    "simulate:continuous": "node meter/simulator.js --start 60000",
-    "test": "hardhat test",
-    "test:sdk": "mocha test/sdk.test.js --timeout 10000",
-    "test:all": "npm run test && npm run test:sdk",
-    "report": "node scripts/generateReport.js",
+    "test": "node --test tests/",
+    "lint": "eslint src/ --fix",
     "clean": "hardhat clean"
   },
   "dependencies": {
-    "axios": "^1.13.2",
-    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethers": "^6.9.0",
     "express": "^4.18.2",
-    "express-rate-limit": "^7.5.1",
-    "helmet": "^7.2.0",
-    "morgan": "^1.10.1"
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@openzeppelin/contracts": "^5.4.0",
-    "hardhat": "^2.19.2",
-    "nodemon": "^3.0.2"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "eslint": "^8.56.0",
+    "hardhat": "^2.19.2"
   }
 }
