@@ -1,0 +1,12 @@
+# Deployment Configuration for Vercel
+# This file automatically deploys the frontend to Vercel
+
+[build]
+  command = "npm run build"
+  functions = "backend"
+  publish = "frontend"
+
+[[redirects]]
+  from = "/api/*"
+  to = "http://localhost:3000/api/:splat"
+  status = 200
