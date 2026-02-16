@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Energy Trade System | NIT Jalandhar</title>
+    <meta name="description" content="Tokenized Campus Energy Trade with Blockchain Provenance and CBDC (e₹) Settlement - Dr B R Ambedkar NIT Jalandhar">
+    <meta name="keywords" content="blockchain, energy trading, CBDC, NIT Jalandhar, smart contracts, ethereum">
+    <meta name="author" content="NIT Jalandhar">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Campus Energy Trade System">
+    <meta property="og:description" content="Blockchain-based energy trading with CBDC settlement">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg-dark: #0a0f1a;
+            --bg-card: #111827;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--text-secondary);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(17, 24, 39, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card:nth-child(1) .feature-icon { background: rgba(59, 130, 246, 0.15); }
+        .feature-card:nth-child(2) .feature-icon { background: rgba(16, 185, 129, 0.15); }
+        .feature-card:nth-child(3) .feature-icon { background: rgba(245, 158, 11, 0.15); }
+        .feature-card:nth-child(4) .feature-icon { background: rgba(139, 92, 246, 0.15); }
+        .feature-card:nth-child(5) .feature-icon { background: rgba(236, 72, 153, 0.15); }
+        .feature-card:nth-child(6) .feature-icon { background: rgba(20, 184, 166, 0.15); }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Architecture Section */
+        .architecture {
+            padding: 6rem 2rem;
+        }
+
+        .arch-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 3rem;
+        }
+
+        .arch-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .arch-node {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .arch-node::after {
+            content: '→';
+            position: absolute;
+            right: -1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .arch-node:last-child::after {
+            display: none;
+        }
+
+        .arch-node-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .arch-node h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .arch-node p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            padding: 6rem 2rem;
+            background: var(--bg-card);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .tech-item {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .tech-item-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tech-item-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Setup Section */
+        .setup {
+            padding: 6rem 2rem;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #c9d1d9;
+        }
+
+        .code-comment {
+            color: #8b949e;
+        }
+
+        .code-command {
+            color: #79c0ff;
+        }
+
+        .setup-steps {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .setup-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .setup-step h3 {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .arch-flow {
+                flex-direction: column;
+            }
+
+            .arch-node::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -1.5rem;
+                transform: translateX(50%);
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <span>⚡</span>
+                <span>Blockchain Energy Trading Platform</span>
+            </div>
+            
+            <h1>
+                Tokenized Campus<br>
+                <span>Energy Trade System</span>
+            </h1>
+            
+            <p class="hero-description">
+                A complete blockchain-based energy trading solution with smart contracts, 
+                energy tokenization, and CBDC (e₹) settlement for 
+                Dr B R Ambedkar National Institute of Technology, Jalandhar.
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="https://github.com/sumansingh20/Blockchain-" class="btn btn-primary" target="_blank">
+                    📦 View on GitHub
+                </a>
+                <a href="#setup" class="btn btn-secondary">
+                    🚀 Quick Start
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Key Features</h2>
+                <p>Enterprise-grade blockchain infrastructure for campus energy management</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⛓️</div>
+                    <h3>Blockchain Provenance</h3>
+                    <p>Immutable energy receipts recorded on Ethereum blockchain with full transaction history and audit trail.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🪙</div>
+                    <h3>Energy Tokenization</h3>
+                    <p>ERC-721 compatible energy certificates minted for each consumption record with carbon tag metadata.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>CBDC Settlement</h3>
+                    <p>Instant settlement using RBI's Central Bank Digital Currency (e₹) simulation with multi-wallet support.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>PSPCL Tariff Engine</h3>
+                    <p>Real Punjab State Power Corporation tariff rates with time-of-use pricing (Peak/Normal/Off-Peak).</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3>Smart Meter Simulation</h3>
+                    <p>15 campus zone meters with realistic consumption patterns for hostels, labs, and facilities.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Carbon Tracking</h3>
+                    <p>Support for GREEN, RENEWABLE, and CERTIFIED carbon tags with automatic discount calculations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="architecture">
+        <div class="container">
+            <div class="section-title">
+                <h2>System Architecture</h2>
+                <p>End-to-end transaction flow from meter reading to settlement</p>
+            </div>
+            
+            <div class="arch-diagram">
+                <div class="arch-flow">
+                    <div class="arch-node">
+                        <div class="arch-node-icon">📡</div>
+                        <h4>Smart Meter</h4>
+                        <p>Energy Reading</p>
+                    </div>
+                    <div class="arch-node">
+                        <div class="arch-node-icon">📝</div>
+                        <h4>Receipt</h4>
+                        <p>Blockchain Record</p>
+                    </div>
+                    <div class="arch-node">
+                        <div class="arch-node-icon">🪙</div>
+                        <h4>Token</h4>
+                        <p>NFT Certificate</p>
+                    </div>
+                    <div class="arch-node">
+                        <div class="arch-node-icon">💳</div>
+                        <h4>CBDC</h4>
+                        <p>e₹ Settlement</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="tech-stack">
+        <div class="container">
+            <div class="section-title">
+                <h2>Technology Stack</h2>
+                <p>Built with modern, production-ready technologies</p>
+            </div>
+            
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-item-icon">💎</div>
+                    <div class="tech-item-name">Solidity</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🔧</div>
+                    <div class="tech-item-name">Hardhat</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🟢</div>
+                    <div class="tech-item-name">Node.js</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🚂</div>
+                    <div class="tech-item-name">Express.js</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">⟠</div>
+                    <div class="tech-item-name">ethers.js</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🛡️</div>
+                    <div class="tech-item-name">OpenZeppelin</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Setup Section -->
+    <section class="setup" id="setup">
+        <div class="container">
+            <div class="section-title">
+                <h2>Quick Start</h2>
+                <p>Get the system running in minutes</p>
+            </div>
+            
+            <div class="setup-steps">
+                <div class="setup-step">
+                    <h3><span class="step-number">1</span> Clone & Install</h3>
+                    <div class="code-block">
+                        <pre><span class="code-comment"># Clone the repository</span>
+<span class="code-command">git clone https://github.com/sumansingh20/Blockchain-.git</span>
+<span class="code-command">cd Blockchain-/campus-energy</span>
+
+<span class="code-comment"># Install dependencies</span>
+<span class="code-command">npm install</span></pre>
+                    </div>
+                </div>
+                
+                <div class="setup-step">
+                    <h3><span class="step-number">2</span> Start Blockchain</h3>
+                    <div class="code-block">
+                        <pre><span class="code-comment"># Terminal 1: Start Hardhat node</span>
+<span class="code-command">npx hardhat node</span>
+
+<span class="code-comment"># Terminal 2: Deploy contract</span>
+<span class="code-command">npx hardhat run scripts/deploy.js --network localhost</span></pre>
+                    </div>
+                </div>
+                
+                <div class="setup-step">
+                    <h3><span class="step-number">3</span> Run Server & Demo</h3>
+                    <div class="code-block">
+                        <pre><span class="code-comment"># Terminal 3: Start backend server</span>
+<span class="code-command">node backend/server.js</span>
+
+<span class="code-comment"># Terminal 4: Run demo</span>
+<span class="code-command">node scripts/demo.js</span></pre>
+                    </div>
+                </div>
+                
+                <div class="setup-step">
+                    <h3><span class="step-number">4</span> Open Dashboard</h3>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">
+                        Open <code style="background: var(--bg-dark); padding: 0.25rem 0.5rem; border-radius: 4px;">http://localhost:3000</code> in your browser to access the energy trading dashboard.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">⚡</div>
+        <h3>Campus Energy Trade System</h3>
+        <p>Dr B R Ambedkar National Institute of Technology, Jalandhar</p>
+        
+        <div class="footer-links">
+            <a href="https://github.com/sumansingh20/Blockchain-" target="_blank">GitHub</a>
+            <a href="https://nitj.ac.in" target="_blank">NIT Jalandhar</a>
+            <a href="https://rbi.org.in" target="_blank">RBI CBDC</a>
+            <a href="https://pspcl.in" target="_blank">PSPCL</a>
+        </div>
+        
+        <p style="margin-top: 3rem; font-size: 0.875rem;">
+            © 2024 NIT Jalandhar. Built with ❤️ for sustainable campus energy management.
+        </p>
+    </footer>
+</body>
+</html>
