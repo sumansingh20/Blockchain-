@@ -1,17 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════════
- * NIT JALANDHAR - CAMPUS ENERGY TRADE SYSTEM
- * Policy Engine - PSPCL Punjab Tariff Calculator
- * ═══════════════════════════════════════════════════════════════════════════════
- * 
- * @author NIT Jalandhar Energy Team
- * @version 2.0.0
- * @license MIT
- * 
- * @description
- * Implements Punjab State Power Corporation Ltd (PSPCL) tariff structure
- * for institutional/commercial consumers as per latest tariff order.
- */
 
 'use strict';
 
